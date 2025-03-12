@@ -211,19 +211,23 @@ example {x y : ℝ} (h1 : x + 3 = 5) (h2 : 2 * x - y * x = 0) : y = 2 := by
   calc
     x
     _ = (x+3)-3 := by ring
-    _ = 5-3 := by rw[h1]
-    _ = 2 := by ring
+    _ = 2 := by rw[h1]; ring
+    --_ = 5-3 := by rw[h1]
+    --_ = 2 := by ring
   calc
     y
-    _ = (2*y + 2*x - 2*x)/2 := by ring
-    _ = 2 := by sorry
+    _ = y * 2 / 2 := by ring
+    _ = y * x / 2 := by rw[h3]
+    _ = - ((2*x-y*x)-2*((x+3)-3)) / 2 := by ring
+    _ = 2 := by rw[h1,h2]; ring
+    --_ = - (0-2*(5-3)) / 2 := by rw[h1,h2]
+    --_ = 2 := by ring
+
 
 example {p q r : ℚ} (h1 : p + q + r = 0) (h2 : p * q + p * r + q * r = 2) :
     p ^ 2 + q ^ 2 + r ^ 2 = -4 :=
   calc
     p ^ 2 + q ^ 2 + r ^ 2
-    _ = ((p+q+r)-q-r)^2 + ((p+q+r)-p-r)^2 + ((p+q+r)-q-p)^2 := by ring
-    _ = (0-q-r)^2 + (0-p-r)^2 + (0-q-p)^2 := by rw[h1]
-    _ = 2 * p^2 + 2 * q ^2 + 2 * r^2 + 2 * ( p * q + p * r + q * r) := by ring
-    _ = 2 * p^2 + 2 * q^2 + 2 * r^2 + 2 * 2 := by rw [h2]
-    _ = -4 := by sorry
+    _ = (p^2+2*p*q+q^2+2*q*r+r^2+2*p*r)-2*(p*q+p*r+q*r) := by ring
+    _ = (p+q+r)^2 - 2*(p*q+p*r+q*r) := by ring
+    _ = -4 := by rw[h1,h2]; ring
