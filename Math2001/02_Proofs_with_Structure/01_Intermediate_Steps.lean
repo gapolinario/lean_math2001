@@ -77,17 +77,62 @@ example (a b : ℝ) (h : a ≤ b) : a ^ 3 ≤ b ^ 3 := by
 /-! # Exercises -/
 
 
+--hint from: https://github.com/lukechen526/math2001/blob/main/Math2001/02_Proofs_with_Structure/01_Intermediate_Steps.lean#L76
+--h3 from there
+--If you remove h2, cancel doesn't work anymore
 example {x : ℚ} (h1 : x ^ 2 = 4) (h2 : 1 < x) : x = 2 := by
-  sorry
+  have h3: x*(x+2) = 2*(x+2) :=
+  calc
+    x*(x+2)
+    _ = x^2 + 2*x := by ring
+    _ = 2*(x+2) := by rw[h1];ring
+  calc
+    x = 2 := by cancel (x+2) at h3
+
 
 example {n : ℤ} (hn : n ^ 2 + 4 = 4 * n) : n = 2 := by
-  sorry
+  have h1: (n-2)^2 = 0 :=
+  calc
+    (n-2)^2
+    _ = (n ^ 2 + 4) - 4 * n := by ring
+    _ = 0 := by rw[hn]; ring
+  have h2: n-2=0 := by cancel 2 at h1
+  calc
+    n
+    _ = (n-2)+2 := by ring
+    _ = 2 := by rw[h2]; ring
+
 
 example (x y : ℚ) (h : x * y = 1) (h2 : x ≥ 1) : y ≤ 1 := by
-  have h3: x ≠ 0 := by addarith[h2]
-  have h4: x * x⁻¹ = 1 := by field_simp[h3]
+  have h3: x*(1-x⁻¹) ≥ 0 :=
+    calc
+     x*(1-x⁻¹)
+     _ = x - x*x⁻¹ := by ring
+     _ = x-1 := by field_simp[h2]
+     _ ≥ 0 := by addarith[h2]
+  have h4: 1-x⁻¹ ≥ 0 := by cancel x at h3
+  have h5: y=x⁻¹ :=
   calc
     y
-    _ = (y * x) / x := by field_simp[h3]
-    _ = 1 / x := by rw[h]
-    _ ≤ 1 := by sorry
+    _ = (y*x)*x⁻¹ := by field_simp[h]
+    _ = (x*y)*x⁻¹ := by ring
+    _ = 1*x⁻¹ := by rw[h]
+    _ = x⁻¹ := by ring
+  have h6: 1-y ≥ 0 :=
+  calc
+    1-y
+    _ = 1-x⁻¹ := by rw[←h5]
+    _ ≥ 0 := by rel[h4]
+  addarith[h6]
+
+-- same as above, streamlining
+-- success! this one doesn't use field_simp
+example (x y : ℚ) (h : x * y = 1) (h2 : x ≥ 1) : y ≤ 1 := by
+  have h3: x*(1-y) ≥ 0 :=
+    calc
+     x*(1-y)
+     _ = x - x*y := by ring
+     _ = x-1 := by rw[h]
+     _ ≥ 0 := by addarith[h2]
+  have h4: 1-y ≥ 0 := by cancel x at h3
+  addarith[h4]
