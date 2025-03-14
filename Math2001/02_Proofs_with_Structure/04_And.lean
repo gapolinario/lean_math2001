@@ -20,7 +20,8 @@ example {p : ℚ} (hp : p ^ 2 ≤ 8) : p ≥ -5 := by
       p ^ 2 ≤ 9 := by addarith [hp]
       _ = 3 ^ 2 := by numbers
     numbers
-  sorry
+  obtain ⟨h1,h2⟩ := hp'
+  addarith[h1]
 
 example {a b : ℝ} (h1 : a - 5 * b = 4) (h2 : b + 2 = 3) : a = 9 ∧ b = 1 := by
   constructor
@@ -49,7 +50,31 @@ example {a b : ℝ} (h1 : a ^ 2 + b ^ 2 = 0) : a = 0 ∧ b = 0 := by
       a ^ 2 ≤ a ^ 2 + b ^ 2 := by extra
       _ = 0 := by rw [h1]
     extra
-  sorry
+  have h3 : b^2 = 0
+  calc
+    b^2
+    _ = (a^2+b^2) - a^2 := by ring
+    _ = 0 - 0 := by rw[h1,h2]
+    _ = 0 := by ring
+  constructor
+  . have h4: a*a = 0 :=
+      calc
+        a*a = a^2 := by ring
+        _ = 0 := by rw[h2]
+    have h5: a=0 ∨ a=0 :=
+      eq_zero_or_eq_zero_of_mul_eq_zero h4
+    obtain h6|h6 := h5
+    exact h6
+  . have h4: b*b = 0 :=
+      calc
+        b*b = b^2 := by ring
+        _ = 0 := by rw[h3]
+    have h5: b=0 ∨ b=0 :=
+      eq_zero_or_eq_zero_of_mul_eq_zero h4
+    obtain h6|h6 := h5
+    exact h6
+
+
 
 /-! # Exercises -/
 
