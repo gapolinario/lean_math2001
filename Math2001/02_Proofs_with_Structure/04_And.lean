@@ -80,23 +80,101 @@ example {a b : ℝ} (h1 : a ^ 2 + b ^ 2 = 0) : a = 0 ∧ b = 0 := by
 
 
 example {a b : ℚ} (H : a ≤ 1 ∧ a + b ≤ 3) : 2 * a + b ≤ 4 := by
-  sorry
+  obtain ⟨h1,h2⟩ := H
+  calc
+    2 * a + b
+    _ = a + (a+b) := by ring
+    _ ≤ 1+3 := by rel[h2,h1]
+    _ = 4 := by numbers
 
 example {r s : ℝ} (H : r + s ≤ 1 ∧ r - s ≤ 5) : 2 * r ≤ 6 := by
-  sorry
+  obtain ⟨h1,h2⟩ := H
+  calc
+    2 * r = (r+s) + (r-s) := by ring
+    _ ≤ 1+5 := by rel[h1,h2]
+    _ = 6 := by numbers
 
 example {m n : ℤ} (H : n ≤ 8 ∧ m + 5 ≤ n) : m ≤ 3 := by
-  sorry
+  obtain ⟨h1,h2⟩ := H
+  calc
+    m = (m+5)-5 := by ring
+    _ ≤ n-5 := by rel[h2]
+    _ ≤ 8-5 := by rel[h1]
+    --_ = 3 := by numbers
 
 example {p : ℤ} (hp : p + 2 ≥ 9) : p ^ 2 ≥ 49 ∧ 7 ≤ p := by
-  sorry
+  have h1 : 7 ≤ p := by addarith[hp]
+  constructor
+  calc
+    p^2 = p*p := by ring
+    _ ≥ 7*7 := by rel[h1]
+  exact h1
 
 example {a : ℚ} (h : a - 1 ≥ 5) : a ≥ 6 ∧ 3 * a ≥ 10 := by
-  sorry
+  have h2: a ≥ 6 := by addarith[h]
+  constructor
+  exact h2
+  calc
+    3*a ≥ 3*6 := by rel[h2]
+    _ = 18 := by ring
 
 example {x y : ℚ} (h : x + y = 5 ∧ x + 2 * y = 7) : x = 3 ∧ y = 2 := by
-  sorry
+  obtain ⟨h1,h2⟩ := h
+  have h3: x=3 :=
+  calc
+    x = 2*(x+y)-(x+2*y) := by ring
+    _ = 2*5-7 := by rw[h1,h2]
+    _ = 3 := by ring
+  constructor
+  . exact h3
+  . calc
+      y
+      _ = (x+y) - x := by ring
+      _ = 5-3 := by rw[h1,h3]
+      _ = 2 := by ring
+
+example {a: ℝ} : a>0 ∨ a=0 ∨ a<0 := by
+  exact trichotomous a 0
+
+example {a: ℝ} : a>0 ∨ a≤0 := by
+  exact lt_or_ge 0 a
 
 example {a b : ℝ} (h1 : a * b = a) (h2 : a * b = b) :
     a = 0 ∧ b = 0 ∨ a = 1 ∧ b = 1 := by
-  sorry
+    have hab: a=b :=
+      calc
+        a
+        _ = a*b := by rw[h1]
+        _ = b := by rw[h2]
+    have h3: b>0 ∨ b=0 ∨ b<0 := by exact trichotomous b 0
+    obtain h3|h3|h3 := h3
+    . right
+      have h4 :=
+        calc
+          a*b
+          _ = b := by rw[h2]
+          _ = 1*b := by ring
+      have h5 :=
+        calc
+          a
+          _ = 1 := by cancel b at h4
+      have h6 :=
+        calc
+          b
+          _ = 1*b := by ring
+          _ = a*b := by rw[h5]
+          _ = a := by rw[h1]
+          _ = 1 := by rw[h5]
+      constructor
+      exact h5
+      exact h6
+    . left
+      constructor
+      have h4 :=
+        calc
+          a
+          _ = b := by rw[hab]
+          _ = 0 := by rw[h3]
+      exact h4
+      exact h3
+    sorry
