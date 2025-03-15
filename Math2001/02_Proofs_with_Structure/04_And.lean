@@ -100,7 +100,6 @@ example {m n : ℤ} (H : n ≤ 8 ∧ m + 5 ≤ n) : m ≤ 3 := by
     m = (m+5)-5 := by ring
     _ ≤ n-5 := by rel[h2]
     _ ≤ 8-5 := by rel[h1]
-    --_ = 3 := by numbers
 
 example {p : ℤ} (hp : p + 2 ≥ 9) : p ^ 2 ≥ 49 ∧ 7 ≤ p := by
   have h1 : 7 ≤ p := by addarith[hp]
@@ -139,6 +138,7 @@ example {a: ℝ} : a>0 ∨ a=0 ∨ a<0 := by
 example {a: ℝ} : a>0 ∨ a≤0 := by
   exact lt_or_ge 0 a
 
+
 example {a b : ℝ} (h1 : a * b = a) (h2 : a * b = b) :
     a = 0 ∧ b = 0 ∨ a = 1 ∧ b = 1 := by
     have hab: a=b :=
@@ -146,35 +146,34 @@ example {a b : ℝ} (h1 : a * b = a) (h2 : a * b = b) :
         a
         _ = a*b := by rw[h1]
         _ = b := by rw[h2]
-    have h3: b>0 ∨ b=0 ∨ b<0 := by exact trichotomous b 0
-    obtain h3|h3|h3 := h3
-    . right
-      have h4 :=
-        calc
-          a*b
-          _ = b := by rw[h2]
-          _ = 1*b := by ring
-      have h5 :=
-        calc
-          a
-          _ = 1 := by cancel b at h4
-      have h6 :=
-        calc
-          b
-          _ = 1*b := by ring
-          _ = a*b := by rw[h5]
-          _ = a := by rw[h1]
-          _ = 1 := by rw[h5]
-      constructor
-      exact h5
-      exact h6
-    . left
-      constructor
-      have h4 :=
-        calc
-          a
-          _ = b := by rw[hab]
-          _ = 0 := by rw[h3]
-      exact h4
-      exact h3
-    sorry
+    have h3: a=0 ∨ a≠0 := by exact eq_or_ne a 0
+    obtain h3|h3 := h3
+    left
+    constructor
+    exact h3
+    calc
+      b
+      _ = a := by rw[hab]
+      _ = 0 := by rw[h3]
+    right
+    have ha: a=1 :=
+    calc
+      a
+      _ = (a*a)/a := by field_simp
+      _ = (a*b)/a := by rw[hab]
+      _ = a/a := by rw[h1]
+      _ = 1 := by field_simp
+    constructor
+    exact ha
+    calc
+      b
+      _ = a := by rw[hab]
+      _ = 1 := by exact ha
+
+
+example {a: ℝ} (h1: a≠0) (h2: a*a=a): a=1 := by
+  calc
+    a
+    _ = (a*a)/a := by field_simp
+    _ = a/a := by rw[h2]
+    _ = 1 := by field_simp
