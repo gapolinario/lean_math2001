@@ -57,23 +57,24 @@ example {a b : ℝ} (h1 : a ^ 2 + b ^ 2 = 0) : a = 0 ∧ b = 0 := by
     _ = 0 - 0 := by rw[h1,h2]
     _ = 0 := by ring
   constructor
-  . have h4: a*a = 0 :=
-      calc
-        a*a = a^2 := by ring
-        _ = 0 := by rw[h2]
-    have h5: a=0 ∨ a=0 :=
-      eq_zero_or_eq_zero_of_mul_eq_zero h4
-    obtain h6|h6 := h5
-    exact h6
-  . have h4: b*b = 0 :=
-      calc
-        b*b = b^2 := by ring
-        _ = 0 := by rw[h3]
-    have h5: b=0 ∨ b=0 :=
-      eq_zero_or_eq_zero_of_mul_eq_zero h4
-    obtain h6|h6 := h5
-    exact h6
-
+  have h4: a*a = 0 :=
+    calc
+      a*a = a^2 := by ring
+      _ = 0 := by rw[h2]
+  have h5: a=0 ∨ a=0 :=
+    eq_zero_or_eq_zero_of_mul_eq_zero h4
+  obtain h5|h5 := h5
+  exact h5
+  exact h5
+  have h4: b*b = 0 :=
+    calc
+      b*b = b^2 := by ring
+      _ = 0 := by rw[h3]
+  have h5: b=0 ∨ b=0 :=
+    eq_zero_or_eq_zero_of_mul_eq_zero h4
+  obtain h5|h5 := h5
+  exact h5
+  exact h5
 
 
 /-! # Exercises -/
@@ -115,7 +116,8 @@ example {a : ℚ} (h : a - 1 ≥ 5) : a ≥ 6 ∧ 3 * a ≥ 10 := by
   exact h2
   calc
     3*a ≥ 3*6 := by rel[h2]
-    _ = 18 := by ring
+    _ = 10+8 := by ring
+    _ ≥ 10 := by extra
 
 example {x y : ℚ} (h : x + y = 5 ∧ x + 2 * y = 7) : x = 3 ∧ y = 2 := by
   obtain ⟨h1,h2⟩ := h
