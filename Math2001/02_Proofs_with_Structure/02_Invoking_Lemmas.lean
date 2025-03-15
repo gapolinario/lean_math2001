@@ -12,7 +12,10 @@ example {x : ℚ} (hx : 3 * x = 2) : x ≠ 1 := by
     _ < 1 := by numbers
 
 example {y : ℝ} : y ^ 2 + 1 ≠ 0 := by
-  sorry
+  apply ne_of_gt
+  --calc
+  --  y^2+1 > 0 := by extra
+  extra
 
 example {a b : ℝ} (h1 : a ^ 2 + b ^ 2 = 0) : a ^ 2 = 0 := by
   apply le_antisymm
