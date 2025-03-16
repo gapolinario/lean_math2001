@@ -132,9 +132,21 @@ example {t : ℝ} (h : ∃ a : ℝ, a * t + 1 < a + t) : t ≠ 1 := by
   sorry
 
 example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
+  obtain ⟨a,ha⟩ := h
   sorry
 
+
+
+
+
+
+
 example {n : ℤ} : ∃ a, 2 * a ^ 3 ≥ n * a + 7 := by
+  use n^2+2
+  calc
+    2 * (n^2 + 2) ^ 3
+    _ = 2*(n^6+6*n^4+12*n^2+8) := by ring
+    _ = (n*(n^2+2)+7) + (2*n^6+12*n^4-n^3+24*n^2-2*n+9) := by ring
   sorry
 
 example {a b c : ℝ} (ha : a ≤ b + c) (hb : b ≤ a + c) (hc : c ≤ a + b) :
