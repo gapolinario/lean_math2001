@@ -205,6 +205,7 @@ example {n : ℤ} : ∃ a, 2 * a ^ 3 ≥ n * a + 7 := by
     _ = 10*n^2 + (2*n^2-n) := by ring
     _ ≥ (2*n^2-n) := by extra
     _ ≥ 0 := by exact help2
+  -- main calculation
   calc
     2*(n^2+2)^3
     --_ = 2*n^6+12*n^4+24*n^2+16 - (n*(n^2+2)+7) + (n*(n^2+2)+7) := by ring
