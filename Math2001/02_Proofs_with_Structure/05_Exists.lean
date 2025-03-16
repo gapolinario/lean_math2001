@@ -131,6 +131,13 @@ example (x : ℚ) : ∃ y : ℚ, y ^ 2 > x := by
 example {t : ℝ} (h : ∃ a : ℝ, a * t + 1 < a + t) : t ≠ 1 := by
   obtain ⟨a,ha⟩ := h
   apply ne_iff_lt_or_gt.mpr
+  have h2 := le_or_gt a 1
+  obtain h2|h2 := h2
+  --if a≤1, t>1
+  right
+  sorry
+  --if a>1, t<1
+  left
   sorry
 
 example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
