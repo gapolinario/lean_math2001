@@ -129,11 +129,64 @@ example (x : ℚ) : ∃ y : ℚ, y ^ 2 > x := by
 
 
 example {t : ℝ} (h : ∃ a : ℝ, a * t + 1 < a + t) : t ≠ 1 := by
+  obtain ⟨a,ha⟩ := h
+  apply ne_iff_lt_or_gt.mpr
+  have h2 := le_or_gt a 1
+  obtain h2|h2 := h2
+  --if a≤1, t>1
+  right
+  sorry
+  --if a>1, t<1
+  left
   sorry
 
 example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
   obtain ⟨a,ha⟩ := h
-  sorry
+  apply ne_iff_lt_or_gt.mpr
+  have h2 := le_or_gt a 2
+  obtain h2|h2 := h2
+  left
+  calc
+    m
+    _ = 2*a := by rw[ha]
+    _ ≤ 2*2 := by rel[h2]
+    _ = 4 := by ring
+    _ < 5 := by numbers
+  have h3 : a ≥ 3 := by addarith[h2]
+  right
+  calc
+    m
+    _ = 2*a := by rw[ha]
+    _ ≥ 2*3 := by rel[h3]
+    _ = 6 := by ring
+    _ > 5 := by numbers
+
+lemma help1 {n : ℤ} (h : 0 < n) : 2*n-1 ≥ 0 := by
+  have h2 : n ≥ 1 := by addarith[h]
+  calc
+    2*n-1
+    _ ≥ 2*1-1 := by rel[h2]
+    _ = 1 := by numbers
+    _ ≥ 0 := by numbers
+
+lemma help2 {n : ℤ} : 2*n^2-n ≥ 0 := by
+  have h0 := lt_trichotomy n 0
+  obtain h0|h0|h0 := h0
+  have h0 : -n > 0 := by addarith[h0]
+  calc
+    2*n^2-n
+    _ = 2*(-n)^2+(-n) := by ring
+    _ ≥ 2*(-n)^2 := by extra
+    _ ≥ 0 := by extra
+  calc
+    2*n^2-n
+    _ = 2*0^2-0 := by rw[h0]
+    _ ≥ 0 := by numbers
+  have h1: 2*n-1 ≥ 0 := help1 h0
+  calc
+    2*n^2-n
+    _ = n*(2*n-1) := by ring
+    _ ≥ 0*0 := by rel[h0,h1]
 
 
 
@@ -143,12 +196,52 @@ example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
 
 example {n : ℤ} : ∃ a, 2 * a ^ 3 ≥ n * a + 7 := by
   use n^2+2
+  have h0 := eq_or_ne n 0
+  obtain h0|h0 := h0
+  have h : 12*n^2-n ≥ 0 :=
   calc
-    2 * (n^2 + 2) ^ 3
-    _ = 2*(n^6+6*n^4+12*n^2+8) := by ring
-    _ = (n*(n^2+2)+7) + (2*n^6+12*n^4-n^3+24*n^2-2*n+9) := by ring
-  sorry
+    12*n^2-n
+    _ = 12*0^2-0 := by rw[h0]
+    --_ = 0 := by ring
+    _ ≥ 0 := by numbers
+  calc
+    2 * (n ^ 2 + 2) ^ 3
+    _ = 2*(0^2+2)^3 := by rw[h0]
+    --_ = 16 := by ring
+    --_ = 16 + 0*(0^2+2)+7 - (0*(0^2+2)+7) := by ring
+    _ = 9 + 0*(0^2+2)+7 := by ring
+    _ = 9 + n*(n^2+2)+7 := by rw[h0]
+    _ ≥ n*(n^2+2)+7 := by extra
+  have h : 12*n^2-n ≥ 0 :=
+  calc
+    12*n^2-n
+    _ = 10*n^2 + (2*n^2-n) := by ring
+    _ ≥ (2*n^2-n) := by extra
+    _ ≥ 0 := by exact help2
+  -- main calculation
+  calc
+    2*(n^2+2)^3
+    --_ = 2*n^6+12*n^4+24*n^2+16 - (n*(n^2+2)+7) + (n*(n^2+2)+7) := by ring
+    --_ = (2*n^6+12*n^4-n^3+24*n^2-2*n+9) + (n*(n^2+2)+7) := by ring
+    _ = (2*n^6+9) + (12*n^4-n^3+24*n^2-2*n) + (n*(n^2+2)+7) := by ring
+    _ ≥ (12*n^4-n^3+24*n^2-2*n) + (n*(n^2+2)+7) := by extra
+    _ = n^2*(12*n^2-n) + 2*(12*n^2-n) + (n*(n^2+2)+7) := by ring
+    _ ≥ n^2*0 + 2*0 + (n*(n^2+2)+7) := by rel[h]
+    _ = (n*(n^2+2)+7) := by ring
+
+
 
 example {a b c : ℝ} (ha : a ≤ b + c) (hb : b ≤ a + c) (hc : c ≤ a + b) :
     ∃ x y z, x ≥ 0 ∧ y ≥ 0 ∧ z ≥ 0 ∧ a = y + z ∧ b = x + z ∧ c = x + y := by
-  sorry
+  use (-a+b+c)/2, (a-b+c)/2, (a+b-c)/2
+  constructor
+  addarith[ha]
+  constructor
+  addarith[hb]
+  constructor
+  addarith[hc]
+  constructor
+  ring
+  constructor
+  ring
+  ring

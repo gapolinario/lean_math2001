@@ -21,7 +21,12 @@ theorem problem1 {p q : ℤ} (h1 : p + 4 * q = 1) (h2 : q - 1 = 2) : p = -11 := 
 
 @[autograded 5]
 theorem problem2 {a b : ℝ} (h1 : a + 2 * b = 4) (h2 : a - b = 1) : a = 2 := by
-  sorry
+  calc
+    a
+    _ = ((a+2*b) + 2*(a-b))/3 := by ring
+    _ = (4+2*1)/3 := by rw[h1,h2]
+    _ = 6/3 := by ring
+    _ = 2 := by ring
 
 @[autograded 5]
 theorem problem3 {x : ℤ} (hx : x ≥ 9) : x ^ 3 - 8 * x ^ 2 + 2 * x ≥ 3 := by
