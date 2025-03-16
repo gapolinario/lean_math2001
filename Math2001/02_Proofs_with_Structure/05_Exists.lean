@@ -4,7 +4,6 @@ import Library.Basic
 
 math2001_init
 
-
 example {a : ℚ} (h : ∃ b : ℚ, a = b ^ 2 + 1) : a > 0 := by
   obtain ⟨b, hb⟩ := h
   calc
@@ -161,6 +160,7 @@ example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
     _ = 6 := by ring
     _ > 5 := by numbers
 
+
 lemma help1 {n : ℤ} (h : 0 < n) : 2*n-1 ≥ 0 := by
   have h2 : n ≥ 1 := by addarith[h]
   calc
@@ -168,6 +168,7 @@ lemma help1 {n : ℤ} (h : 0 < n) : 2*n-1 ≥ 0 := by
     _ ≥ 2*1-1 := by rel[h2]
     _ = 1 := by numbers
     _ ≥ 0 := by numbers
+
 
 lemma help2 {n : ℤ} : 2*n^2-n ≥ 0 := by
   have h0 := lt_trichotomy n 0
@@ -189,21 +190,16 @@ lemma help2 {n : ℤ} : 2*n^2-n ≥ 0 := by
     _ ≥ 0*0 := by rel[h0,h1]
 
 
-
-
-
-
-
 example {n : ℤ} : ∃ a, 2 * a ^ 3 ≥ n * a + 7 := by
   use n^2+2
   have h0 := eq_or_ne n 0
   obtain h0|h0 := h0
-  have h : 12*n^2-n ≥ 0 :=
+  /-have h : 12*n^2-n ≥ 0 :=
   calc
     12*n^2-n
     _ = 12*0^2-0 := by rw[h0]
     --_ = 0 := by ring
-    _ ≥ 0 := by numbers
+    _ ≥ 0 := by numbers-/
   calc
     2 * (n ^ 2 + 2) ^ 3
     _ = 2*(0^2+2)^3 := by rw[h0]
