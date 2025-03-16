@@ -146,9 +146,62 @@ example {x y : ℤ} (hx : Odd x) (hy : Odd y) : Odd (x * y) := by
   ring
 
 example (n : ℤ) : Odd (3 * n ^ 2 + 3 * n - 1) := by
-  sorry
+  -- this a have+obtain in one step
+  obtain h|h := Int.even_or_odd n
+  obtain ⟨k,hk⟩ := h
+  use 6*k^2+3*k-1
+  rw[hk]
+  ring
+  obtain ⟨k,hk⟩ := h
+  use 6*k^2+9*k+2
+  rw[hk]
+  ring
+
 
 example (n : ℤ) : ∃ m ≥ n, Odd m := by
-  sorry
+  obtain h|h := le_or_gt n 0
+  . use -2*n+1
+    have h : -n ≥ 0 := by addarith[h]
+    constructor
+    calc
+      -2*n+1 = n+1+3*(-n) := by ring
+      _ ≥ n+1+3*0 := by extra
+      _ = n+1 := by ring
+      _ ≥ n := by extra
+    use -n
+    ring
+  . use 2*n+1
+    constructor
+    calc
+      2*n+1 = n+n+1 := by ring
+      _ ≥ n+1 := by extra
+      _ ≥ n := by extra
+    use n
+    ring
+
+
 example (a b c : ℤ) : Even (a - b) ∨ Even (a + c) ∨ Even (b - c) := by
-  sorry
+  obtain ha|ha := Int.even_or_odd a
+  obtain hb|hb := Int.even_or_odd b
+  obtain ⟨ka,hka⟩ := ha;obtain ⟨kb,hkb⟩ := hb
+  left
+  use ka-kb;rw[hka,hkb];ring
+  obtain hc|hc := Int.even_or_odd c
+  obtain ⟨ka,hka⟩ := ha;obtain ⟨kc,hkc⟩ := hc
+  right;left
+  use ka+kc;rw[hka,hkc];ring
+  obtain ⟨kb,hkb⟩ := hb;obtain ⟨kc,hkc⟩ := hc
+  right;right
+  use kb-kc;rw[hkb,hkc];ring
+  obtain hb|hb := Int.even_or_odd b
+  obtain hc|hc := Int.even_or_odd c
+  obtain ⟨kb,hkb⟩ := hb;obtain ⟨kc,hkc⟩ := hc
+  right;right
+  use kb-kc;rw[hkb,hkc];ring
+  obtain ⟨ka,hka⟩ := ha;obtain ⟨kc,hkc⟩ := hc
+  right
+  left
+  use ka+kc+1;rw[hka,hkc];ring
+  obtain ⟨ka,hka⟩ := ha;obtain ⟨kb,hkb⟩ := hb
+  left
+  use ka-kb;rw[hka,hkb];ring
