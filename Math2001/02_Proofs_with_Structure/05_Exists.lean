@@ -129,14 +129,46 @@ example (x : ℚ) : ∃ y : ℚ, y ^ 2 > x := by
 
 
 example {t : ℝ} (h : ∃ a : ℝ, a * t + 1 < a + t) : t ≠ 1 := by
+  obtain ⟨a,ha⟩ := h
+  apply ne_iff_lt_or_gt.mpr
   sorry
 
 example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
-  sorry
+  obtain ⟨a,ha⟩ := h
+  apply ne_iff_lt_or_gt.mpr
+  have h2 := le_or_gt a 2
+  obtain h2|h2 := h2
+  left
+  calc
+    m
+    _ = 2*a := by rw[ha]
+    _ ≤ 2*2 := by rel[h2]
+    _ = 4 := by ring
+    _ < 5 := by numbers
+  have h3 : a ≥ 3 := by addarith[h2]
+  right
+  calc
+    m
+    _ = 2*a := by rw[ha]
+    _ ≥ 2*3 := by rel[h3]
+    _ = 6 := by ring
+    _ > 5 := by numbers
+
 
 example {n : ℤ} : ∃ a, 2 * a ^ 3 ≥ n * a + 7 := by
   sorry
 
 example {a b c : ℝ} (ha : a ≤ b + c) (hb : b ≤ a + c) (hc : c ≤ a + b) :
     ∃ x y z, x ≥ 0 ∧ y ≥ 0 ∧ z ≥ 0 ∧ a = y + z ∧ b = x + z ∧ c = x + y := by
-  sorry
+  use (-a+b+c)/2, (a-b+c)/2, (a+b-c)/2
+  constructor
+  addarith[ha]
+  constructor
+  addarith[hb]
+  constructor
+  addarith[hc]
+  constructor
+  ring
+  constructor
+  ring
+  ring
