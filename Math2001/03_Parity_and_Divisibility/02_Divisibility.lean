@@ -12,7 +12,8 @@ example : (11 : ℕ) ∣ 88 := by
 
 
 example : (-2 : ℤ) ∣ 6 := by
-  sorry
+  use -3
+  ring
 
 example {a b : ℤ} (hab : a ∣ b) : a ∣ b ^ 2 + 2 * b := by
   obtain ⟨k, hk⟩ := hab
@@ -23,10 +24,18 @@ example {a b : ℤ} (hab : a ∣ b) : a ∣ b ^ 2 + 2 * b := by
 
 
 example {a b c : ℕ} (hab : a ∣ b) (hbc : b ^ 2 ∣ c) : a ^ 2 ∣ c := by
-  sorry
+  obtain ⟨p,hp⟩ := hab
+  obtain ⟨q,hq⟩ := hbc
+  use p^2*q
+  rw[hq,hp]
+  ring
+
 
 example {x y z : ℕ} (h : x * y ∣ z) : x ∣ z := by
-  sorry
+  obtain ⟨k,hk⟩ := h
+  use y*k
+  rw[hk]
+  ring
 
 example : ¬(5 : ℤ) ∣ 12 := by
   apply Int.not_dvd_of_exists_lt_and_lt
@@ -57,16 +66,23 @@ example {a b : ℕ} (hab : a ∣ b) (hb : 0 < b) : 0 < a := by
 
 
 example (t : ℤ) : t ∣ 0 := by
-  sorry
+  use 0
+  ring
 
 example : ¬(3 : ℤ) ∣ -10 := by
   sorry
 
 example {x y : ℤ} (h : x ∣ y) : x ∣ 3 * y - 4 * y ^ 2 := by
-  sorry
+  obtain ⟨k,hk⟩ := h
+  use 3*k-4*x*k^2
+  rw[hk]
+  ring
 
 example {m n : ℤ} (h : m ∣ n) : m ∣ 2 * n ^ 3 + n := by
-  sorry
+  obtain ⟨k,hk⟩ := h
+  use 2*m^2*k^3+k
+  rw[hk]
+  ring
 
 example {a b : ℤ} (hab : a ∣ b) : a ∣ 2 * b ^ 3 - b ^ 2 + 3 * b := by
   sorry
