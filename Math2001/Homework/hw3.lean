@@ -14,11 +14,19 @@ for clearer statements and any special instructions. -/
 
 @[autograded 2]
 theorem problem1 {a b : ℚ} (h : a = 3 - b) : a + b = 3 ∨ a + b = 4 := by
-  sorry
+  left
+  addarith[h]
+
 
 @[autograded 5]
 theorem problem2 {t : ℚ} (h : t ^ 2 + t - 6 = 0) : t = 2 ∨ t = -3 := by
+  have h2 :=
+  calc
+    (t+3)*(t-2) = t^2+t-6 := by ring
+    _ = 0 := h
   sorry
+
+
 
 @[autograded 3]
 theorem problem3 : ∃ a b : ℕ, a ≠ 0 ∧ 2 ^ a = 5 * b + 1 := by
