@@ -46,23 +46,68 @@ example {x : ℤ} : x ^ 3 ≡ x [ZMOD 3] := by
 
 
 example {n : ℤ} (hn : n ≡ 1 [ZMOD 3]) : n ^ 3 + 7 * n ≡ 2 [ZMOD 3] :=
-  sorry
+  calc
+    n ^ 3 + 7 * n ≡ 1^3 + 7*1 [ZMOD 3]:= by rel[hn]
+    _ = 2+3*2 := by ring
+    _ ≡ 2 [ZMOD 3] := by extra
 
 example {a : ℤ} (ha : a ≡ 3 [ZMOD 4]) :
     a ^ 3 + 4 * a ^ 2 + 2 ≡ 1 [ZMOD 4] :=
-  sorry
+  calc
+    a ^ 3 + 4 * a ^ 2 + 2
+    _ ≡ 3^3+4*3^2+2 [ZMOD 4] := by rel[ha]
+    _ = 1+4*16 := by numbers
+    _ ≡ 1 [ZMOD 4] := by extra
 
 example (a b : ℤ) : (a + b) ^ 3 ≡ a ^ 3 + b ^ 3 [ZMOD 3] :=
-  sorry
+  calc
+    (a+b)^3 = a^3+3*a^2*b+3*b^2*a+b^3 := by ring
+    _ = (a^3+b^3) + 3*(a^2*b+a*b^2) := by ring
+    _ ≡ (a^3+b^3) [ZMOD 3] := by extra
 
 example : ∃ a : ℤ, 4 * a ≡ 1 [ZMOD 7] := by
-  sorry
+  use 2
+  use 1
+  ring
 
 example : ∃ k : ℤ, 5 * k ≡ 6 [ZMOD 8] := by
-  sorry
+  use 6
+  use 3
+  ring
 
 example (n : ℤ) : 5 * n ^ 2 + 3 * n + 7 ≡ 1 [ZMOD 2] := by
-  sorry
+  obtain h|h := Int.even_or_odd n
+  obtain ⟨k,hk⟩ := h
+  use 10*k^2+3*k+3
+  rw[hk]
+  ring
+  obtain ⟨k,hk⟩ := h
+  use 10*k^2+13*k+7
+  rw[hk]
+  ring
 
 example {x : ℤ} : x ^ 5 ≡ x [ZMOD 5] := by
-  sorry
+  mod_cases x%5
+  calc
+    x^5 ≡ 0^5 [ZMOD 5]:= by rel[H]
+    _ = 0 := by numbers
+    _ ≡ x [ZMOD 5] := by rel[H]
+  calc
+    x^5 ≡ 1^5 [ZMOD 5]:= by rel[H]
+    _ = 1 := by numbers
+    _ ≡ x [ZMOD 5] := by rel[H]
+  calc
+    x^5 ≡ 2^5 [ZMOD 5]:= by rel[H]
+    _ = 2+5*6 := by numbers
+    _ ≡ 2 [ZMOD 5] := by extra
+    _ ≡ x [ZMOD 5] := by rel[H]
+  calc
+    x^5 ≡ 3^5 [ZMOD 5]:= by rel[H]
+    _ = 3+5*48 := by numbers
+    _ ≡ 3 [ZMOD 5] := by extra
+    _ ≡ x [ZMOD 5] := by rel[H]
+  calc
+    x^5 ≡ 4^5 [ZMOD 5]:= by rel[H]
+    _ = 4+5*204 := by numbers
+    _ ≡ 4 [ZMOD 5] := by extra
+    _ ≡ x [ZMOD 5] := by rel[H]
