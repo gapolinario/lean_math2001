@@ -57,10 +57,11 @@ theorem problem5 {x : ℕ} (hx : Odd x) : Odd (x ^ 3) := by
 theorem problem6 (n : ℕ) : ∃ m ≥ n, Odd m := by
   use 2*n+1
   constructor
+  apply le_of_lt
   have h : 2*n+1 > n :=
   calc
     2*n+1 = n+(n+1) := by ring
     _ > n := by extra
-  sorry
+  exact h
   use n
   ring
