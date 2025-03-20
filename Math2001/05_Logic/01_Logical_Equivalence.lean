@@ -47,16 +47,43 @@ example (P Q R : Prop) : (P ∧ (Q ∨ R)) ↔ ((P ∧ Q) ∨ (P ∧ R)) := by
       constructor
       · apply h1
       · apply h2
-  · intro hx
-    obtain ⟨h1,h2⟩ := hx
+  · intro h
+    obtain h|h := h
+    obtain ⟨h1,h2⟩ := h
     constructor
     . apply h1
     . left
       apply h2
-    sorry
+    obtain ⟨h1,h2⟩ := h
+    constructor
+    . apply h1
+    . right
+      apply h2
 
-
-
+-- this also works, see below
+example (P Q R : Prop) : (P ∧ (Q ∨ R)) ↔ ((P ∧ Q) ∨ (P ∧ R)) := by
+  constructor
+  · intro h
+    obtain ⟨h1, h2 | h2⟩ := h
+    · left
+      constructor
+      · apply h1
+      · apply h2
+    · right
+      constructor
+      · apply h1
+      · apply h2
+  · intro h
+    -- all at once, here
+    obtain ⟨h1,h2⟩|⟨h1,h2⟩ := h
+    constructor
+    . apply h1
+    . left
+      apply h2
+    constructor
+    . apply h1
+    . right
+      apply h2
 
 
 #truth_table P ∧ (Q ∨ R)
@@ -108,22 +135,61 @@ example {P Q R : Prop} (h1 : P → Q) (h2 : P → R) (h3 : P) : Q ∧ R := by
 
 
 example (P : Prop) : ¬(P ∧ ¬ P) := by
+  --apply not_and_or.mpr
   sorry
 
 example {P Q : Prop} (h1 : P ↔ ¬ Q) (h2 : Q) : ¬ P := by
   sorry
 
 example {P Q : Prop} (h1 : P ∨ Q) (h2 : Q → P) : P := by
-  sorry
+  obtain h1|h1 := h1
+  apply h1
+  apply h2
+  apply h1
 
 example {P Q R : Prop} (h : P ↔ Q) : (P ∧ R) ↔ (Q ∧ R) := by
-  sorry
+  constructor
+  . intro h2
+    obtain ⟨hP,hR⟩ := h2
+    constructor
+    . apply h.mp
+      apply hP
+    . apply hR
+  . intro h2
+    obtain ⟨hQ,hR⟩ := h2
+    constructor
+    . apply h.mpr
+      apply hQ
+    . apply hR
+
 
 example (P : Prop) : (P ∧ P) ↔ P := by
-  sorry
+  constructor
+  . intro h
+    obtain ⟨h,h⟩ := h
+    apply h
+  . intro h
+    constructor
+    . apply h
+    . apply h
+
+
 
 example (P Q : Prop) : (P ∨ Q) ↔ (Q ∨ P) := by
-  sorry
+  constructor
+  . intro h
+    obtain h|h := h
+    right
+    apply h
+    left
+    apply h
+  . intro h
+    obtain h|h := h
+    right
+    apply h
+    left
+    apply h
+
 
 example (P Q : Prop) : ¬(P ∨ Q) ↔ (¬P ∧ ¬Q) := by
   sorry
