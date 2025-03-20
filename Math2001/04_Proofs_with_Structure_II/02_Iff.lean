@@ -43,7 +43,17 @@ theorem odd_iff_modEq (n : ℤ) : Odd n ↔ n ≡ 1 [ZMOD 2] := by
     dsimp [(· ∣ ·)]
     use k
     addarith [hk]
-  · sorry
+  · intro h
+    obtain ⟨k,hk⟩ := h
+    use k
+    addarith[hk]
+
+-- Anki
+example (n : ℤ) : n ≡ 0 [ZMOD 2] → Even n := by
+  intro h
+  obtain ⟨k,hk⟩ := h
+  use k
+  addarith[hk]
 
 theorem even_iff_modEq (n : ℤ) : Even n ↔ n ≡ 0 [ZMOD 2] := by
   constructor
@@ -53,27 +63,73 @@ theorem even_iff_modEq (n : ℤ) : Even n ↔ n ≡ 0 [ZMOD 2] := by
     dsimp [(· ∣ ·)]
     use k
     addarith [hk]
-  · sorry
+  · intro h
+    obtain ⟨k,hk⟩ := h
+    use k
+    addarith[hk]
 
 example {x : ℝ} : x ^ 2 + x - 6 = 0 ↔ x = -3 ∨ x = 2 := by
-  sorry
+  constructor
+  . intro h
+    have h2 :=
+      calc
+        (x+3)*(x-2) = x^2+x-6 := by ring
+        _ = 0 := by rw[h]
+    have h3 := eq_zero_or_eq_zero_of_mul_eq_zero h2
+    obtain h3|h3 := h3
+    left
+    addarith[h3]
+    right
+    addarith[h3]
+  . intro h
+    obtain h|h := h
+    calc
+      x^2+x-6 = (-3)^2 + (-3) - 6 := by rw[h]
+      _ = 0 := by ring
+    calc
+      x^2+x-6 = 2^2+2-6 := by rw[h]
+      _ = 0 := by ring
 
 example {a : ℤ} : a ^ 2 - 5 * a + 5 ≤ -1 ↔ a = 2 ∨ a = 3 := by
-  sorry
+  constructor
+  . intro h
+    have h2 : a^2-5*a+6 ≤ 0 := by addarith[h]
+    have h3 :=
+      calc
+        (a-2)*(a-3) = a^2 -5*a + 6 := by ring
+        _ ≤ 0 := by rel[h2]
+    sorry
+  . intro h
+    obtain h|h := h
+    calc
+      a^2-5*a+5 = 2^2-5*2+5 := by rw[h]
+      _ ≤ -1 := by numbers
+    calc
+      a^2-5*a+5 = 3^2-5*3+5 := by rw[h]
+      _ ≤ -1 := by numbers
+
 
 example {n : ℤ} (hn : n ^ 2 - 10 * n + 24 = 0) : Even n := by
   have hn1 :=
     calc (n - 4) * (n - 6) = n ^ 2 - 10 * n + 24 := by ring
       _ = 0 := hn
   have hn2 := eq_zero_or_eq_zero_of_mul_eq_zero hn1
-  sorry
+  obtain h|h := hn2
+  use 2
+  addarith[h]
+  use 3
+  addarith[h]
 
 example {n : ℤ} (hn : n ^ 2 - 10 * n + 24 = 0) : Even n := by
   have hn1 :=
     calc (n - 4) * (n - 6) = n ^ 2 - 10 * n + 24 := by ring
       _ = 0 := hn
   rw [mul_eq_zero] at hn1 -- `hn1 : n - 4 = 0 ∨ n - 6 = 0`
-  sorry
+  obtain h|h := hn1
+  use 2
+  addarith[h]
+  use 3
+  addarith[h]
 
 example {x y : ℤ} (hx : Odd x) (hy : Odd y) : Odd (x + y + 1) := by
   rw [Int.odd_iff_modEq] at *

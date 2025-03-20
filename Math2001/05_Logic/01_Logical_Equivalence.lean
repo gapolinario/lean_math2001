@@ -4,6 +4,9 @@ import Library.Basic
 math2001_init
 set_option pp.funBinderTypes true
 
+-- Anki
+example {Q : Prop} (h1: ¬Q) (h2: Q) : P := by
+  contradiction
 
 example {P Q : Prop} (h1 : P ∨ Q) (h2 : ¬ Q) : P := by
   obtain hP | hQ := h1
@@ -14,7 +17,8 @@ example {P Q : Prop} (h1 : P ∨ Q) (h2 : ¬ Q) : P := by
 example (P Q : Prop) : P → (P ∨ ¬ Q) := by
   intro hP
   left
-  apply hP
+  --apply hP
+  exact hP --either of them works
 
 
 #truth_table ¬(P ∧ ¬ Q)
@@ -43,7 +47,17 @@ example (P Q R : Prop) : (P ∧ (Q ∨ R)) ↔ ((P ∧ Q) ∨ (P ∧ R)) := by
       constructor
       · apply h1
       · apply h2
-  · sorry
+  · intro hx
+    obtain ⟨h1,h2⟩ := hx
+    constructor
+    . apply h1
+    . left
+      apply h2
+    sorry
+
+
+
+
 
 #truth_table P ∧ (Q ∨ R)
 #truth_table (P ∧ Q) ∨ (P ∧ R)
