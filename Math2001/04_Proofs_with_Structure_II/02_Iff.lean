@@ -93,11 +93,13 @@ example {x : ℝ} : x ^ 2 + x - 6 = 0 ↔ x = -3 ∨ x = 2 := by
 example {a : ℤ} : a ^ 2 - 5 * a + 5 ≤ -1 ↔ a = 2 ∨ a = 3 := by
   constructor
   . intro h
-    have h2 : a^2-5*a+6 ≤ 0 := by addarith[h]
-    have h3 :=
-      calc
-        (a-2)*(a-3) = a^2 -5*a + 6 := by ring
-        _ ≤ 0 := by rel[h2]
+    have h2 :=
+    calc
+      (2*a-5)^2 = 4 *(a^2-5*a+5)+5 := by ring
+      _ ≤ 4*(-1)+5 := by rel[h]
+      _ = 1^2 := by ring
+    have h3 : -1 ≤ 2*a-5 ∧ 2*a-5 ≤ 1 := by sorry --abs_le_of_sq_le_sq' h2
+    obtain ⟨hl,hr⟩ := h3
     sorry
   . intro h
     obtain h|h := h
@@ -143,22 +145,86 @@ example (n : ℤ) : Even n ∨ Odd n := by
   · left
     rw [Int.even_iff_modEq]
     apply hn
-  · sorry
+  · right
+    rw [Int.odd_iff_modEq]
+    apply hn
 
 /-! # Exercises -/
 
 
 example {x : ℝ} : 2 * x - 1 = 11 ↔ x = 6 := by
-  sorry
+  constructor
+  intro h
+  calc
+    x = ((2*x-1)+1)/2 := by ring
+    _ = (11+1)/2 := by rw[h]
+    _ = 6 := by ring
+  intro h
+  calc
+    2*x-1 = 2*6-1 := by rw[h]
+    _ = 11 := by ring
 
 example {n : ℤ} : 63 ∣ n ↔ 7 ∣ n ∧ 9 ∣ n := by
-  sorry
+  constructor
+  . intro h
+    obtain ⟨a,ha⟩ := h
+    constructor
+    . use 9*a
+      rw[ha]
+      ring
+    . use 7*a
+      rw[ha]
+      ring
+  . intro h
+    obtain ⟨h1,h2⟩ := h
+    obtain ⟨a,ha⟩ := h1
+    obtain ⟨b,hb⟩ := h2
+    use 4*b-3*a
+    calc
+      n = 28*n-27*n := by ring
+      _ = 28*(9*b)-27*n := by rw[hb]
+      _ = 28*(9*b)-27*(7*a) := by rw[ha]
+      _ = 63*(4*b-3*a) := by ring
+
 
 theorem dvd_iff_modEq {a n : ℤ} : n ∣ a ↔ a ≡ 0 [ZMOD n] := by
-  sorry
+  constructor
+  . intro h
+    obtain ⟨x,hx⟩ := h
+    use x
+    rw[hx]
+    ring
+  . intro h
+    obtain ⟨x,hx⟩ := h
+    have hx : a = n*x := by addarith[hx]
+    use x
+    apply hx
 
 example {a b : ℤ} (hab : a ∣ b) : a ∣ 2 * b ^ 3 - b ^ 2 + 3 * b := by
-  sorry
+  obtain ⟨n,hn⟩ := hab
+  use 2*a^2*n^3-a*n^2+3*n
+  calc
+    2*b^3-b^2+3*b = 2*(a*n)^3-(a*n)^2+3*(a*n) := by rw[hn]
+    _ = a*(2*a^2*n^3-a*n^2+3*n) := by ring
 
 example {k : ℕ} : k ^ 2 ≤ 6 ↔ k = 0 ∨ k = 1 ∨ k = 2 := by
-  sorry
+  constructor
+  . intro h
+    have h2 : k < 3 := by sorry --abs_le_of_sq_le_sq'?
+    interval_cases k
+    left
+    rfl
+    right
+    left
+    rfl
+    right
+    right
+    rfl
+  . intro h
+    obtain h|h|h := h
+    rw[h]
+    numbers
+    rw[h]
+    numbers
+    rw[h]
+    numbers

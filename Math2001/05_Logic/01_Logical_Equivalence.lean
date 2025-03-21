@@ -192,7 +192,19 @@ example (P Q : Prop) : (P ∨ Q) ↔ (Q ∨ P) := by
 
 
 example (P Q : Prop) : ¬(P ∨ Q) ↔ (¬P ∧ ¬Q) := by
+  constructor
+  intro h
+  have h' : P ∨ Q → False := by apply h
+  constructor
+  intro R
   sorry
+  sorry
+  intro h h'
+  obtain ⟨h1,h2⟩ := h
+  obtain h'|h' := h'
+  contradiction
+  contradiction
+
 
 example {P Q : α → Prop} (h1 : ∀ x, P x → Q x) (h2 : ∀ x, P x) : ∀ x, Q x := by
   sorry

@@ -103,20 +103,48 @@ example : ¬ Prime 6 := by
 /-! # Exercises -/
 
 
-example {a : ℚ} (h : ∀ b : ℚ, a ≥ -3 + 4 * b - b ^ 2) : a ≥ 1 :=
-  sorry
+example {a : ℚ} (h : ∀ b : ℚ, a ≥ -3 + 4 * b - b ^ 2) : a ≥ 1 := by
+  calc
+    a ≥ -3 + 4*2-2^2 := by apply h
+    _ = 1 := by ring
 
+-- proof of h1 and h2 by chatGPT Lean4 assistant
 example {n : ℤ} (hn : ∀ m, 1 ≤ m → m ≤ 5 → m ∣ n) : 15 ∣ n := by
-  sorry
+  have h1: 3 ∣ n := hn 3 (by numbers) (by numbers)
+  have h2: 5 ∣ n := hn 5 (by numbers) (by numbers)
+  obtain ⟨a,ha⟩ := h1
+  obtain ⟨b,hb⟩ := h2
+  use 2*a-3*b
+  calc
+    n = 10*n-9*n := by ring
+    _ = 10*(3*a)-9*n := by rw[ha]
+    _ = 10*(3*a)-9*(5*b) := by rw[hb]
+    _ = 15*(2*a-3*b) := by ring
+
 
 example : ∃ n : ℕ, ∀ m : ℕ, n ≤ m := by
-  sorry
+  use 0
+  intro m
+  addarith[]
 
 example : ∃ a : ℝ, ∀ b : ℝ, ∃ c : ℝ, a + b < c := by
-  sorry
+  use -1
+  intro b
+  use b
+  addarith[]
 
 example : forall_sufficiently_large x : ℝ, x ^ 3 + 3 * x ≥ 7 * x ^ 2 + 12 := by
-  sorry
+  use 7
+  intro x hx
+  calc
+    x^3+3*x = x*x^2+3*x := by ring
+    _ ≥ 7*x^2+3*7 := by rel[hx]
+    _ = 7*x^2+12+9 := by ring
+    _ ≥ 7*x^2+12 := by extra
+
 
 example : ¬(Prime 45) := by
-  sorry
+  apply not_prime 9 5
+  · numbers
+  · numbers
+  · numbers
