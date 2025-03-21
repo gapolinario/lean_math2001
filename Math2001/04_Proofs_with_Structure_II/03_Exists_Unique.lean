@@ -29,10 +29,22 @@ example : ∃! x : ℚ, ∀ a, a ≥ 1 → a ≤ 3 → (a - x) ^ 2 ≤ 1 := by
     addarith[h1]
     addarith[h2]
   . intro y h1
-    sorry
-
-
-
+    have h2 := h1 1 (by numbers) (by numbers)
+    have h3 := h1 3 (by numbers) (by numbers)
+    rw[← one_pow 2] at h2
+    rw[← one_pow 2] at h3
+    have h4:= abs_le_of_sq_le_sq' h2 (by numbers)
+    have h5:= abs_le_of_sq_le_sq' h3 (by numbers)
+    --rw[one_pow 2] at h4
+    obtain ⟨h4,_⟩ := h4
+    obtain ⟨_,h5⟩ := h5
+    have h6: y ≤ 2 := by addarith[h4]
+    --have h6': y ≥ 0 := by addarith[h4']
+    --have h7: y ≤ 4 := by addarith[h5]
+    have h7: y ≥ 2 := by addarith[h5]
+    apply le_antisymm
+    apply h6
+    apply h7
 
 
 
@@ -85,10 +97,40 @@ example : ∃! r : ℤ, 0 ≤ r ∧ r < 5 ∧ 14 ≡ r [ZMOD 5] := by
 example : ∃! x : ℚ, 4 * x - 3 = 9 := by
   use 3
   constructor
-  sorry
+  . rfl
+  . intro y hy
+    calc
+      y = ((4*y-3)+3)/4 := by ring
+      _ = (9+3)/4 := by rw[hy]
+      _ = 3 := by numbers
+
 
 example : ∃! n : ℕ, ∀ a, n ≤ a := by
-  sorry
+  use 0
+  constructor
+  . intro a
+    have h := zero_le a
+    apply h
+  . intro y hy
+    obtain h|h|h := lt_trichotomy y 0
+    have h2 := Nat.not_lt_zero y
+    contradiction
+    apply h
+    --have h2 := Nat.not_lt_zero y
+    have h3 := hy 0
+    rw[← not_le] at h
+    contradiction
 
 example : ∃! r : ℤ, 0 ≤ r ∧ r < 3 ∧ 11 ≡ r [ZMOD 3] := by
-  sorry
+  use 2
+  dsimp
+  constructor
+  . constructor
+    numbers
+    constructor
+    numbers
+    use 3
+    numbers
+  . intro y hy
+    obtain ⟨h1,h2,q,h3⟩ := hy
+    sorry
