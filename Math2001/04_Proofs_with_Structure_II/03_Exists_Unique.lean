@@ -21,7 +21,20 @@ example : ∃! a : ℝ, 3 * a + 1 = 7 := by
 
 
 example : ∃! x : ℚ, ∀ a, a ≥ 1 → a ≤ 3 → (a - x) ^ 2 ≤ 1 := by
-  sorry
+  use 2
+  constructor
+  . intro a h1 h2
+    rw[← one_pow 2]
+    apply sq_le_sq'
+    addarith[h1]
+    addarith[h2]
+  . intro y h1
+    sorry
+
+
+
+
+
 
 example {x : ℚ} (hx : ∃! a : ℚ, a ^ 2 = x) : x = 0 := by
   obtain ⟨a, ha1, ha2⟩ := hx
@@ -70,6 +83,8 @@ example : ∃! r : ℤ, 0 ≤ r ∧ r < 5 ∧ 14 ≡ r [ZMOD 5] := by
 
 
 example : ∃! x : ℚ, 4 * x - 3 = 9 := by
+  use 3
+  constructor
   sorry
 
 example : ∃! n : ℕ, ∀ a, n ≤ a := by
