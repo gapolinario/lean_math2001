@@ -102,6 +102,17 @@ example : ¬ Prime 6 := by
 
 /-! # Exercises -/
 
+-- Anki
+example {a : ℚ} (h : ∀ x : ℚ, a ≤ (x-2)^2): a ≤ 0 := by
+  calc
+    a ≤ (2-2)^2 := by apply h
+    _ = 0 := by ring
+
+
+example {a : ℚ} (h : ∀ b : ℚ, a ≥ -3 + 4 * b - b ^ 2) : a ≥ 1 := by
+  calc
+    a ≥ -3+4*2-2^2 := by apply h
+    _ = 1 := by ring
 
 example {a : ℚ} (h : ∀ b : ℚ, a ≥ -3 + 4 * b - b ^ 2) : a ≥ 1 := by
   calc
@@ -137,11 +148,11 @@ example : forall_sufficiently_large x : ℝ, x ^ 3 + 3 * x ≥ 7 * x ^ 2 + 12 :=
   use 7
   intro x hx
   calc
-    x^3+3*x = x*x^2+3*x := by ring
+    x^3+3*x
+    _ = x*x^2+3*x := by ring
     _ ≥ 7*x^2+3*7 := by rel[hx]
     _ = 7*x^2+12+9 := by ring
     _ ≥ 7*x^2+12 := by extra
-
 
 example : ¬(Prime 45) := by
   apply not_prime 9 5
