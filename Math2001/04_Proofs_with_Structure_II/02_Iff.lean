@@ -98,8 +98,7 @@ example {a : ℤ} : a ^ 2 - 5 * a + 5 ≤ -1 ↔ a = 2 ∨ a = 3 := by
       (2*a-5)^2 = 4 *(a^2-5*a+5)+5 := by ring
       _ ≤ 4*(-1)+5 := by rel[h]
       _ = 1^2 := by ring
-    have h3 : -1 ≤ 2*a-5 ∧ 2*a-5 ≤ 1 := by sorry --abs_le_of_sq_le_sq' h2
-    obtain ⟨hl,hr⟩ := h3
+    have h3 : -1 ≤ 2*a-5 ∧ 2*a-5 ≤ 1 := by sorry --apply abs_le_of_sq_le_sq' h2
     sorry
   . intro h
     obtain h|h := h
@@ -207,10 +206,23 @@ example {a b : ℤ} (hab : a ∣ b) : a ∣ 2 * b ^ 3 - b ^ 2 + 3 * b := by
     2*b^3-b^2+3*b = 2*(a*n)^3-(a*n)^2+3*(a*n) := by rw[hn]
     _ = a*(2*a^2*n^3-a*n^2+3*n) := by ring
 
+-- temp lemma
+lemma lt_of_sq_lt_sq {k b: ℕ} (h: k^2 < b^2) : k < b := by
+  have h2: b ≤ k ∨ b > k := le_or_gt b k
+  obtain h2|h2 := h2
+  have h3: k^2 ≥ b^2 := by rel[h2]
+  have h3: ¬(k^2 < b^2) := not_lt_of_ge h3
+  contradiction
+  exact h2
+
 example {k : ℕ} : k ^ 2 ≤ 6 ↔ k = 0 ∨ k = 1 ∨ k = 2 := by
   constructor
   . intro h
-    have h2 : k < 3 := by sorry --abs_le_of_sq_le_sq'?
+    have h2 :=
+    calc
+      k^2 ≤ 6 := by rel[h]
+      _ < 3^2 := by numbers
+    have h3 : k < 3 := lt_of_sq_lt_sq h2
     interval_cases k
     left
     rfl
