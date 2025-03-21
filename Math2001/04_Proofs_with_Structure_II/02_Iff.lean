@@ -98,8 +98,17 @@ example {a : ℤ} : a ^ 2 - 5 * a + 5 ≤ -1 ↔ a = 2 ∨ a = 3 := by
       (2*a-5)^2 = 4 *(a^2-5*a+5)+5 := by ring
       _ ≤ 4*(-1)+5 := by rel[h]
       _ = 1^2 := by ring
-    have h3 : -1 ≤ 2*a-5 ∧ 2*a-5 ≤ 1 := by sorry --apply abs_le_of_sq_le_sq' h2
-    sorry
+    have h3 := abs_le_of_sq_le_sq' h2 (by numbers)
+    obtain ⟨hl,hr⟩ := h3
+    have hl2 : 2 * a ≥ 2 * 2 := by addarith[hl]
+    have hl3 : 2 * a ≤ 2 * 3 := by addarith[hr]
+    cancel 2 at hl2
+    cancel 2 at hl3
+    interval_cases a
+    left
+    rfl
+    right
+    rfl
   . intro h
     obtain h|h := h
     calc
