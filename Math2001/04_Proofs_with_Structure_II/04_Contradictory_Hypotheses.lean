@@ -138,6 +138,18 @@ example {a b c : ℕ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     b^2 < 1^2+b^2 := by extra
     _ = c^2 := by rw[h_pyth]
   have h4 := lt_of_sq_lt_sq h3
+  have h5 : b+1 ≤ c := by addarith[h4]
+  have h6 :=
+  calc
+    c^2 = 1^2 + b^2 := by rw[h_pyth]
+    _ ≤ 1^2 + 3 + b^2 := by extra
+    _ = b^2 + 2*2 := by ring
+    _ < b^2+2*b := by rel[h2]
+    _ < b^2+2*b+1 := by extra
+    _ = (b+1)^2 := by ring
+  have h7 := lt_of_sq_lt_sq h6
+  have h8 := not_le_of_lt h7
+  contradiction
   sorry
 
 

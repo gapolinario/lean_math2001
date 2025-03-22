@@ -23,7 +23,12 @@ example : ¬ 3 ∣ 13 := by
     calc 13 = 3 * k := hk
       _ ≤ 3 * 4 := by rel [h4]
     numbers at h
-  · sorry
+  · have h :=
+    calc
+      13 = 3 * k := hk
+      _ ≥ 3 * 5 := by rel[h5]
+    numbers at h
+
 
 example {x y : ℝ} (h : x + y = 0) : ¬(x > 0 ∧ y > 0) := by
   intro h
@@ -33,9 +38,39 @@ example {x y : ℝ} (h : x + y = 0) : ¬(x > 0 ∧ y > 0) := by
     _ > 0 := by extra
   numbers at H
 
-
+-- no indentation, doesn't work
 example : ¬ (∃ n : ℕ, n ^ 2 = 2) := by
-  sorry
+  intro h
+  obtain ⟨n,hn⟩ := h
+  obtain h|h := le_or_succ_le n 1
+  have h2 :=
+    calc
+      2 = n^2 := by rw[hn]
+      _  ≤ 1^2 := by rel[h]
+  numbers at h2
+  have h2 :=
+    calc
+      2 = n^2 := by rw[hn]
+      _ ≥ 2^2 := by rel[h]
+      _ ≥ 4 := by numbers
+  numbers at h2
+
+-- with indentation, does work
+example : ¬ (∃ n : ℕ, n ^ 2 = 2) := by
+  intro h
+  obtain ⟨n,hn⟩ := h
+  obtain h|h := le_or_succ_le n 1
+  . have h2 :=
+      calc
+        2 = n^2 := by rw[hn]
+        _  ≤ 1^2 := by rel[h]
+    numbers at h2
+  . have h2 :=
+      calc
+        2 = n^2 := by rw[hn]
+        _ ≥ 2^2 := by rel[h]
+    numbers at h2
+
 
 example (n : ℤ) : Int.Even n ↔ ¬ Int.Odd n := by
   constructor
@@ -53,8 +88,21 @@ example (n : ℤ) : Int.Even n ↔ ¬ Int.Odd n := by
 
 
 example (n : ℤ) : Int.Odd n ↔ ¬ Int.Even n := by
-  sorry
+  constructor
+  . intro h1 h2
+    rw[Int.odd_iff_modEq] at h1
+    rw[Int.even_iff_modEq] at h2
+    have h :=
+      calc
+        0 ≡ n [ZMOD 2] := by rel[h2]
+        _ ≡ 1 [ZMOD 2] := by rel[h1]
+    numbers at h
+  . intro h
+    obtain h2|h2 := even_or_odd n
+    contradiction
+    apply h2
 
+-- this works
 example (n : ℤ) : ¬(n ^ 2 ≡ 2 [ZMOD 3]) := by
   intro h
   mod_cases hn : n % 3
@@ -63,8 +111,40 @@ example (n : ℤ) : ¬(n ^ 2 ≡ 2 [ZMOD 3]) := by
       _ ≡ n ^ 2 [ZMOD 3] := by rel [hn]
       _ ≡ 2 [ZMOD 3] := by rel [h]
     numbers at h -- contradiction!
-  · sorry
-  · sorry
+  · have h :=
+      calc 1 = 1^2 := by numbers
+        _ ≡ n^2 [ZMOD 3] := by rel[hn]
+        _ ≡ 2 [ZMOD 3] := by rel[h]
+    numbers at h
+  · have h :=
+      calc 1
+        _ ≡ 1 + 3*1 [ZMOD 3] := by extra
+        _ = 2^2 := by numbers
+        _ ≡ n^2 [ZMOD 3] := by rel[hn]
+        _ ≡ 2 [ZMOD 3] := by rel[h]
+    numbers at h
+
+-- this doesn't work, why?
+example (n : ℤ) : ¬(n ^ 2 ≡ 2 [ZMOD 3]) := by
+  intro h
+  mod_cases hn : n % 3
+  · have h :=
+    calc (0:ℤ) = 0 ^ 2 := by numbers
+      _ ≡ n ^ 2 [ZMOD 3] := by rel [hn]
+      _ ≡ 2 [ZMOD 3] := by rel [h]
+    numbers at h -- contradiction!
+  · have h :=
+      calc 1 = 1^2 := by numbers
+        _ ≡ n^2 [ZMOD 3] := by rel[hn]
+        _ ≡ 2 [ZMOD 3] := by rel[h]
+    numbers at h
+  · have h :=
+      calc (4:ℤ)
+        _ = 2^2 := by numbers
+        _ ≡ n^2 [ZMOD 3] := by rel[hn]
+        _ ≡ 2 [ZMOD 3] := by rel[h]
+    numbers at h
+    sorry
 
 example {p : ℕ} (k l : ℕ) (hk1 : k ≠ 1) (hkp : k ≠ p) (hkl : p = k * l) :
     ¬(Prime p) := by
