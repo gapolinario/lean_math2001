@@ -217,10 +217,31 @@ example : Prime 79 := by
 
 
 example : ¬ (∃ t : ℝ, t ≤ 4 ∧ t ≥ 5) := by
-  sorry
+  intro h
+  obtain ⟨t,ht1,ht2⟩ := h
+  have ht3 : ¬(t ≥ 5) := by addarith[ht1]
+  contradiction
 
 example : ¬ (∃ a : ℝ, a ^ 2 ≤ 8 ∧ a ^ 3 ≥ 30) := by
-  sorry
+  intro h
+  obtain ⟨t,h1,h2⟩ := h
+  have h3 : t^2 < 3^2 := by addarith[h1]
+  obtain ⟨hl,hr⟩ := abs_lt_of_sq_lt_sq' h3 (by numbers)
+  obtain h4|h4 := le_or_lt t 0
+  . have h5 :=
+      calc
+        t^3 = t^2 * t := by ring
+        _ ≤ t^2 * 0 := by rel[h4]
+        _ = 0 := by ring
+        _ < 30 := by numbers
+    have h6 := not_le_of_lt h5
+    contradiction
+  . have h5 :=
+      calc
+        t^3 ≤ 3^3 := by rel[hr]
+        _ < 30 := by numbers
+    have h6 := not_le_of_lt h5
+    contradiction
 
 example : ¬ Int.Even 7 := by
   sorry

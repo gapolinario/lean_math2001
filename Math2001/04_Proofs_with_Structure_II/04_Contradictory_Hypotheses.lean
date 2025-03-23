@@ -160,13 +160,15 @@ example {x y : ℝ} (n : ℕ) (hx : 0 ≤ x) (hn : 0 < n) (h : y ^ n ≤ x ^ n) 
     y ≤ x := by
   have h2 := le_or_lt y x
   obtain h2|h2 := h2
-  apply h2
-  rw[← not_le] at h2
-  sorry
+  . apply h2
+  . rw[← not_le] at h2
+    sorry
 
 example (n : ℤ) (hn : n ^ 2 ≡ 4 [ZMOD 5]) : n ≡ 2 [ZMOD 5] ∨ n ≡ 3 [ZMOD 5] := by
   obtain ⟨x,hx⟩ := hn
   sorry
+
+
 
 
 example : Prime 7 := by
@@ -209,11 +211,19 @@ example (p : ℕ) (h : Prime p) : p = 2 ∨ Odd p := by
   dsimp[Prime] at h
   have h2 := even_or_odd p
   obtain h2|h2 := h2
-  have h3 := eq_or_ne p 2
-  obtain h3|h3 := h3
-  left
-  apply h3
-  obtain ⟨hl,hr⟩ := h
-  sorry
-  right
-  apply h2
+  . obtain h3|h3 := eq_or_ne p 2
+    . left
+      apply h3
+    . obtain ⟨hl,hr⟩ := h
+      --have h4 := Even.two_dvd h2 -- doesn't work for some reason
+      obtain ⟨k,hk⟩ := h2
+      have h4 : 2 ∣ p := by
+        use k
+        apply hk
+      have h5 := hr 2 h4
+      obtain h5|h5 := h5
+      . numbers at h5
+      . left
+        addarith[h5]
+  . right
+    apply h2
