@@ -141,7 +141,7 @@ example (P : Prop) : ¬(P ∧ ¬ P) := by
 
 example {P Q : Prop} (h1 : P ↔ ¬ Q) (h2 : Q) : ¬ P := by
   intro h
-  apply h1.mp h
+  apply h1.mp h h2
 
 example {P Q : Prop} (h1 : P ∨ Q) (h2 : Q → P) : P := by
   obtain h1|h1 := h1
