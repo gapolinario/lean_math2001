@@ -38,23 +38,6 @@ example {x y : ℝ} (h : x + y = 0) : ¬(x > 0 ∧ y > 0) := by
     _ > 0 := by extra
   numbers at H
 
--- no indentation, doesn't work
-example : ¬ (∃ n : ℕ, n ^ 2 = 2) := by
-  intro h
-  obtain ⟨n,hn⟩ := h
-  obtain h|h := le_or_succ_le n 1
-  have h2 :=
-    calc
-      2 = n^2 := by rw[hn]
-      _  ≤ 1^2 := by rel[h]
-  numbers at h2
-  have h2 :=
-    calc
-      2 = n^2 := by rw[hn]
-      _ ≥ 2^2 := by rel[h]
-      _ ≥ 4 := by numbers
-  numbers at h2
-
 -- with indentation, does work
 example : ¬ (∃ n : ℕ, n ^ 2 = 2) := by
   intro h
@@ -124,28 +107,6 @@ example (n : ℤ) : ¬(n ^ 2 ≡ 2 [ZMOD 3]) := by
         _ ≡ 2 [ZMOD 3] := by rel[h]
     numbers at h
 
--- this doesn't work, why?
-example (n : ℤ) : ¬(n ^ 2 ≡ 2 [ZMOD 3]) := by
-  intro h
-  mod_cases hn : n % 3
-  · have h :=
-    calc (0:ℤ) = 0 ^ 2 := by numbers
-      _ ≡ n ^ 2 [ZMOD 3] := by rel [hn]
-      _ ≡ 2 [ZMOD 3] := by rel [h]
-    numbers at h -- contradiction!
-  · have h :=
-      calc 1 = 1^2 := by numbers
-        _ ≡ n^2 [ZMOD 3] := by rel[hn]
-        _ ≡ 2 [ZMOD 3] := by rel[h]
-    numbers at h
-  · have h :=
-      calc (4:ℤ)
-        _ = 2^2 := by numbers
-        _ ≡ n^2 [ZMOD 3] := by rel[hn]
-        _ ≡ 2 [ZMOD 3] := by rel[h]
-    numbers at h
-    sorry
-
 example {p : ℕ} (k l : ℕ) (hk1 : k ≠ 1) (hkp : k ≠ p) (hkl : p = k * l) :
     ¬(Prime p) := by
   have hk : k ∣ p
@@ -172,6 +133,7 @@ example (a b : ℤ) (h : ∃ q, b * q < a ∧ a < b * (q + 1)) : ¬b ∣ a := by
     _ < b * (q + 1) := hq₂
   cancel b at h1
   sorry
+
 
 example {p : ℕ} (hp : 2 ≤ p)  (T : ℕ) (hTp : p < T ^ 2)
     (H : ∀ (m : ℕ), 1 < m → m < T → ¬ (m ∣ p)) :
@@ -208,10 +170,14 @@ example : Prime 79 := by
     constructor <;> numbers
   · use 19
     constructor <;> numbers
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+  · use 15
+    constructor <;> numbers
+  · use 13
+    constructor <;> numbers
+  · use 11
+    constructor <;> numbers
+  · use 9
+    constructor <;> numbers
 
 /-! # Exercises -/
 
@@ -244,22 +210,148 @@ example : ¬ (∃ a : ℝ, a ^ 2 ≤ 8 ∧ a ^ 3 ≥ 30) := by
     contradiction
 
 example : ¬ Int.Even 7 := by
-  sorry
+  intro h
+  obtain ⟨k,hk⟩ := h
+  obtain h2|h2 := le_or_succ_le k 3
+  . have h3 :=
+      calc
+        7 = 2 * k := by rw[hk]
+        _ ≤ 2*3 := by rel[h2]
+        _ = 6 := by numbers
+    numbers at h3
+  . have h3 :=
+      calc
+        7 = 2 * k := by rw[hk]
+        _ ≥ 2*4 := by rel[h2]
+        _ = 8 := by numbers
+    numbers at h3
+
+
 
 example {n : ℤ} (hn : n + 3 = 7) : ¬ (Int.Even n ∧ n ^ 2 = 10) := by
-  sorry
+  intro h
+  obtain ⟨h1,h2⟩ := h
+  obtain ⟨k,hk⟩ := h1
+  have ha :=
+    calc
+      n^2 = ((n+3)-3)^2 := by ring
+      _ = (7-3)^2 := by rw[hn]
+      _ = 16 := by numbers
+  have hc :=
+    calc
+      10=n^2 := by rw[h2]
+      _ = 16 := by rw[ha]
+  numbers at hc
+
 
 example {x : ℝ} (hx : x ^ 2 < 9) : ¬ (x ≤ -3 ∨ x ≥ 3) := by
-  sorry
+  intro h
+  obtain h|h := h
+  . have h' : -x ≥ 3 := by addarith[h]
+    have h2 :=
+      calc
+        x^2 = (-x)^2 := by ring
+        _ ≥ 3^2 := by rel[h']
+        _ ≥ 9 := by numbers
+    have h3 :=
+      calc
+        9 ≤ x^2 := by rel[h2]
+        _ < 9 := by rel[hx]
+    numbers at h3
+  . have h2 :=
+      calc
+        x^2 ≥ 3^2 := by rel[h]
+        _ ≥ 9 := by numbers
+    have h3 :=
+      calc
+        9 ≤ x^2 := by rel[h2]
+        _ < 9 := by rel[hx]
+    numbers at h3
 
 example : ¬ (∃ N : ℕ, ∀ k > N, Nat.Even k) := by
-  sorry
+  intro h
+  obtain ⟨N,hN⟩ := h
+  have h' : N ≥ 0 := by addarith[]
+  have h'' :=
+    calc
+      2*N+1 = N+N+1 := by ring
+      _ ≥ 0+N+1 := by rel[h']
+      _ = N+1 := by ring
+      _ > N := by extra
+  have h2 := hN (2*N+1) (by apply h'')
+  obtain ⟨k,hk⟩ := h2
+  obtain h3|h3 := le_or_lt k N
+  . have h4 :=
+      calc
+        2*N+1 = 2 * k := by rw[hk]
+        _ ≤ 2*N := by rel[h3]
+    have h5 : 1≤0 := by addarith[h4]
+    numbers at h5
+  . have h4 : k ≥ N+1 := by addarith[h3]
+    have h5 :=
+      calc
+        2*N+1 = 2 * k := by rw[hk]
+        _ ≥ 2*(N+1) := by rel[h4]
+        _ = 2*N+2 := by ring
+    have h5 : 1 ≥ 2 := by addarith[h5]
+    numbers at h5
 
 example (n : ℤ) : ¬(n ^ 2 ≡ 2 [ZMOD 4]) := by
-  sorry
+  intro h
+  mod_cases hn : n%4
+  . have h2 :=
+      calc
+        2 ≡ n^2 [ZMOD 4] := by rel[h]
+        _ ≡ 0^2 [ZMOD 4] := by rel[hn]
+        _ = 0 := by numbers
+    numbers at h2
+  . have h2 :=
+      calc
+        2 ≡ n^2 [ZMOD 4] := by rel[h]
+        _ ≡ 1^2 [ZMOD 4] := by rel[hn]
+        _ = 1 := by numbers
+    numbers at h2
+  . have h2 :=
+      calc
+        2 ≡ n^2 [ZMOD 4] := by rel[h]
+        _ ≡ 2^2 [ZMOD 4] := by rel[hn]
+        _ = 0 + 4*1 := by ring
+        _ ≡ 0 [ZMOD 4] := by extra
+    numbers at h2
+  . have h2 :=
+      calc
+        2 ≡ n^2 [ZMOD 4] := by rel[h]
+        _ ≡ 3^2 [ZMOD 4] := by rel[hn]
+        _ = 1 + 4*2 := by ring
+        _ ≡ 1 [ZMOD 4] := by extra
+    numbers at h2
 
 example : ¬ Prime 1 := by
-  sorry
+  intro h
+  dsimp [Prime] at h
+  obtain ⟨h1,h2⟩ := h
+  numbers at h1
 
 example : Prime 97 := by
-  sorry
+  apply better_prime_test (T := 10)
+  · numbers
+  · numbers
+  intro m hm1 hm2
+  apply Nat.not_dvd_of_exists_lt_and_lt
+  interval_cases m
+  · use 48
+    constructor <;> numbers
+  · use 32
+    constructor <;> numbers
+  · use 24
+    constructor <;> numbers
+  · use 19
+    constructor <;> numbers
+  · use 16
+    constructor <;> numbers
+  · use 13
+    constructor <;> numbers
+  · use 12
+    constructor <;> numbers
+  · use 10
+    constructor <;> numbers
