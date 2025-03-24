@@ -135,11 +135,13 @@ example {P Q R : Prop} (h1 : P → Q) (h2 : P → R) (h3 : P) : Q ∧ R := by
 
 
 example (P : Prop) : ¬(P ∧ ¬ P) := by
-  --apply not_and_or.mpr
-  sorry
+  intro h
+  obtain ⟨h1,h2⟩ := h
+  apply h2 h1
 
 example {P Q : Prop} (h1 : P ↔ ¬ Q) (h2 : Q) : ¬ P := by
-  sorry
+  intro h
+  apply h1.mp h
 
 example {P Q : Prop} (h1 : P ∨ Q) (h2 : Q → P) : P := by
   obtain h1|h1 := h1
@@ -194,16 +196,22 @@ example (P Q : Prop) : (P ∨ Q) ↔ (Q ∨ P) := by
 example (P Q : Prop) : ¬(P ∨ Q) ↔ (¬P ∧ ¬Q) := by
   constructor
   intro h
-  have h' : P ∨ Q → False := by apply h
   constructor
-  intro R
-  sorry
-  sorry
-  intro h h'
-  obtain ⟨h1,h2⟩ := h
-  obtain h'|h' := h'
-  contradiction
-  contradiction
+  . intro h2
+    have h3 : P ∨ Q := by
+      left
+      apply h2
+    apply h h3
+  . intro h2
+    have h3 : P ∨ Q := by
+      right
+      apply h2
+    apply h h3
+  . intro h h'
+    obtain ⟨h1,h2⟩ := h
+    obtain h'|h' := h'
+    . contradiction
+    . contradiction
 
 
 example {P Q : α → Prop} (h1 : ∀ x, P x → Q x) (h2 : ∀ x, P x) : ∀ x, Q x := by
