@@ -1,12 +1,6 @@
 /- Copyright (c) Heather Macbeth, 2023.  All rights reserved. -/
 import Mathlib.Data.Real.Basic
-import Library.Theory.ParityModular
 import Library.Basic
-import Library.Tactic.ModEq
-
-math2001_init
-
-open Int
 
 
 -- no indentation, doesn't work
