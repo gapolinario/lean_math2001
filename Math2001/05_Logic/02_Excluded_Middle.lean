@@ -8,10 +8,9 @@ math2001_init
 def Superpowered (k : ℕ) : Prop := ∀ n : ℕ, Prime (k ^ k ^ n + 1)
 
 
-#eval 0 ^ 0 ^ 0 + 1 -- 1
+/-#eval 0 ^ 0 ^ 0 + 1 -- 1
 #eval 0 ^ 0 ^ 1 + 1 -- 2
-#eval 0 ^ 0 ^ 2 + 1 -- 2
-
+#eval 0 ^ 0 ^ 2 + 1 -- 2-/
 
 theorem not_superpowered_zero : ¬ Superpowered 0 := by
   intro h
@@ -21,9 +20,9 @@ theorem not_superpowered_zero : ¬ Superpowered 0 := by
   contradiction
 
 
-#eval 1 ^ 1 ^ 0 + 1 -- 2
+/-#eval 1 ^ 1 ^ 0 + 1 -- 2
 #eval 1 ^ 1 ^ 1 + 1 -- 2
-#eval 1 ^ 1 ^ 2 + 1 -- 2
+#eval 1 ^ 1 ^ 2 + 1 -- 2-/
 
 
 theorem superpowered_one : Superpowered 1 := by
@@ -32,17 +31,16 @@ theorem superpowered_one : Superpowered 1 := by
   apply prime_two
 
 
-#eval 2 ^ 2 ^ 0 + 1 -- 3
+/-#eval 2 ^ 2 ^ 0 + 1 -- 3
 #eval 2 ^ 2 ^ 1 + 1 -- 5
 #eval 2 ^ 2 ^ 2 + 1 -- 17
 #eval 2 ^ 2 ^ 3 + 1 -- 257
-#eval 2 ^ 2 ^ 4 + 1 -- 65537
+#eval 2 ^ 2 ^ 4 + 1 -- 65537-/
 
 
-#eval 3 ^ 3 ^ 0 + 1 -- 4
+/-#eval 3 ^ 3 ^ 0 + 1 -- 4
 #eval 3 ^ 3 ^ 1 + 1 -- 28
-#eval 3 ^ 3 ^ 2 + 1 -- 19684
-
+#eval 3 ^ 3 ^ 2 + 1 -- 19684-/
 
 theorem not_superpowered_three : ¬ Superpowered 3 := by
   intro h
@@ -80,10 +78,41 @@ example {P : Prop} (hP : ¬¬P) : P := by
 def Tribalanced (x : ℝ) : Prop := ∀ n : ℕ, (1 + x / n) ^ n < 3
 
 example : ∃ x : ℝ, Tribalanced x ∧ ¬ Tribalanced (x + 1) := by
-  sorry
+  use 1
+  constructor
+  . sorry
+    --obtain h|h := le_or_succ_le n 0
+  . intro h
+    --dsimp [Tribalanced] at h
+    have h2 :=
+      calc
+        3 > (1+((1:ℝ)+(1:ℝ))/(2:ℕ))^2 := by apply h
+        _ = 4 := by ring
+    numbers at h2
 
 example (P Q : Prop) : (¬P → ¬Q) ↔ (Q → P) := by
-  sorry
+  constructor
+  . intro h hq
+    by_cases hp : P
+    . apply hp
+    . have := h hp
+      contradiction
+  . intro h hnp
+    by_cases hq : Q
+    . have := h hq
+      contradiction
+    . apply hq
 
 example : ∃ k : ℕ, Superpowered k ∧ ¬ Superpowered (k + 1) := by
-  sorry
+  by_cases h2 : Superpowered 2
+  . use 2
+    constructor
+    . apply h2
+    . apply not_superpowered_three
+      /-intro h
+      have h3 := not_superpowered_three
+      contradiction-/
+  . use 1
+    constructor
+    . apply superpowered_one
+    . apply h2
