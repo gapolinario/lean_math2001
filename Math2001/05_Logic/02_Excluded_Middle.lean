@@ -104,15 +104,8 @@ example (P Q : Prop) : (¬P → ¬Q) ↔ (Q → P) := by
     . apply hq
 
 example : ∃ k : ℕ, Superpowered k ∧ ¬ Superpowered (k + 1) := by
-  by_cases h2 : Superpowered 2
-  . use 2
-    constructor
-    . apply h2
-    . apply not_superpowered_three
-      /-intro h
-      have h3 := not_superpowered_three
-      contradiction-/
-  . use 1
-    constructor
-    . apply superpowered_one
-    . apply h2
+  use 1
+  constructor
+  . apply superpowered_one
+  . intro h
+    sorry
