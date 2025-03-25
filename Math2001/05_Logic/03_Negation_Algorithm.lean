@@ -20,7 +20,12 @@ example (P Q : Prop) : ¬ (P ∧ Q) ↔ (¬ P ∨ ¬ Q) := by
       contradiction
     · left
       apply hP
-  · sorry
+  · intro h h2
+    obtain ⟨hl,hr⟩ := h2
+    obtain h|h := h
+    . contradiction
+    . contradiction
+
 
 example :
     ¬(∀ m : ℤ, m ≠ 2 → ∃ n : ℤ, n ^ 2 = m) ↔ ∃ m : ℤ, m ≠ 2 ∧ ∀ n : ℤ, n ^ 2 ≠ m :=
@@ -32,7 +37,11 @@ example :
 
 example : ¬(∀ n : ℤ, ∃ m : ℤ, n ^ 2 < m ∧ m < (n + 1) ^ 2)
     ↔ ∃ n : ℤ, ∀ m : ℤ, n ^ 2 ≥ m ∨ m ≥ (n + 1) ^ 2 :=
-  sorry
+  calc ¬(∀ n : ℤ, ∃ m : ℤ, n ^ 2 < m ∧ m < (n + 1) ^ 2)
+    _ ↔ ∃ n:ℤ, ¬(∃ m:ℤ, n^2 < m ∧ m < (n+1)^2 ) := by rel[not_forall]
+    _ ↔ ∃ n:ℤ, ∀ m:ℤ, ¬(n^2 < m ∧ m < (n+1)^2 ) := by rel[not_exists]
+    _ ↔ ∃ n:ℤ, ∀ m:ℤ, ¬(n^2 < m) ∨ ¬(m < (n+1)^2 ) := by rel[not_and_or]
+    _ ↔ ∃ n:ℤ, ∀ m:ℤ, n^2 ≥ m ∨ m ≥ (n + 1)^2 := by sorry
 
 #push_neg ¬(∀ m : ℤ, m ≠ 2 → ∃ n : ℤ, n ^ 2 = m)
   -- ∃ m : ℤ, m ≠ 2 ∧ ∀ (n : ℤ), n ^ 2 ≠ m
@@ -61,7 +70,10 @@ example : ¬ (∃ n : ℕ, n ^ 2 = 2) := by
 
 
 example (P : Prop) : ¬ (¬ P) ↔ P := by
-  sorry
+  by_cases h : P
+  . constructor
+    . sorry
+    . sorry
 
 example (P Q : Prop) : ¬ (P → Q) ↔ (P ∧ ¬ Q) := by
   sorry
