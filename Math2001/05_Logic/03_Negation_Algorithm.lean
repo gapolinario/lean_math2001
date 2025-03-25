@@ -76,10 +76,18 @@ example (P : Prop) : ¬ (¬ P) ↔ P := by
     . sorry
 
 example (P Q : Prop) : ¬ (P → Q) ↔ (P ∧ ¬ Q) := by
-  sorry
+  constructor
+  . intro h
+    constructor
+    . sorry
+    . sorry
+  . sorry
 
 example (P : α → Prop) : ¬ (∀ x, P x) ↔ ∃ x, ¬ P x := by
-  sorry
+  constructor
+  . intro h
+    sorry
+  . sorry
 
 example : (¬ ∀ a b : ℤ, a * b = 1 → a = 1 ∨ b = 1)
     ↔ ∃ a b : ℤ, a * b = 1 ∧ a ≠ 1 ∧ b ≠ 1 :=
@@ -99,16 +107,35 @@ example : ¬ (∃ m : ℤ, ∀ n : ℤ, m = n + 5) ↔ ∀ m : ℤ, ∃ n : ℤ,
 
 example : ¬ (∀ x : ℝ, x ^ 2 ≥ x) := by
   push_neg
-  sorry
+  use 0.5
+  numbers
 
 example : ¬ (∃ t : ℝ, t ≤ 4 ∧ t ≥ 5) := by
   push_neg
-  sorry
+  intro t
+  have h := le_or_lt t 4
+  obtain h|h := h
+  . have h : t < 5 := by addarith[h]
+    right
+    apply h
+  . left
+    apply h
 
 example : ¬ Int.Even 7 := by
   dsimp [Int.Even]
   push_neg
-  sorry
+  intro k
+  have h := le_or_lt k 3
+  obtain h|h := h
+  . apply ne_of_gt
+    calc
+      2*k ≤ 2*3 := by rel[h]
+      _ < 7 := by numbers
+  . apply ne_of_lt
+    have h : 4 ≤ k := by addarith[h]
+    calc
+      7 < 2*4 := by numbers
+      _ ≤ 2*k := by rel[h]
 
 example {p : ℕ} (k : ℕ) (hk1 : k ≠ 1) (hkp : k ≠ p) (hk : k ∣ p) : ¬ Prime p := by
   dsimp [Prime]
@@ -116,6 +143,8 @@ example {p : ℕ} (k : ℕ) (hk1 : k ≠ 1) (hkp : k ≠ p) (hk : k ∣ p) : ¬ 
   sorry
 
 example : ¬ ∃ a : ℤ, ∀ n : ℤ, 2 * a ^ 3 ≥ n * a + 7 := by
+  push_neg
+  intro a
   sorry
 
 example {p : ℕ} (hp : ¬ Prime p) (hp2 : 2 ≤ p) : ∃ m, 2 ≤ m ∧ m < p ∧ m ∣ p := by
