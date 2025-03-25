@@ -80,10 +80,18 @@ def Tribalanced (x : ℝ) : Prop := ∀ n : ℕ, (1 + x / n) ^ n < 3
 example : ∃ x : ℝ, Tribalanced x ∧ ¬ Tribalanced (x + 1) := by
   use 1
   constructor
-  . sorry
-    --obtain h|h := le_or_succ_le n 0
+  . intro n
+    obtain h|h := eq_or_gt_of_le (zero_le n)
+    . calc
+        (1+(1:ℝ)/n)^n = (1+(1:ℝ)/n)^0 := by rw[h]
+        _ = 1 := by ring
+        _ < 3 := by numbers
+    . have h2 : 1 ≤ n := by addarith [h]
+      have h3 : (1:ℝ)/n ≤ 1 := by sorry--div_le_one.mpr h h2
+      calc
+        (1+(1:ℝ)/n)^n ≤ (1+1)^n := by rel[h3]
+        _ < 3 := by sorry
   . intro h
-    --dsimp [Tribalanced] at h
     have h2 :=
       calc
         3 > (1+((1:ℝ)+(1:ℝ))/(2:ℕ))^2 := by apply h
@@ -108,4 +116,11 @@ example : ∃ k : ℕ, Superpowered k ∧ ¬ Superpowered (k + 1) := by
   constructor
   . apply superpowered_one
   . intro h
-    sorry
+    dsimp [Superpowered] at h
+    have h5 := h 5
+    have h2 : ¬ Prime ((1 + 1) ^ (1 + 1) ^ 5 + 1) := by
+      apply not_prime 641 6700417
+      . numbers
+      . numbers
+      . numbers
+    contradiction
