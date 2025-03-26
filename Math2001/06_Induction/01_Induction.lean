@@ -165,22 +165,113 @@ example (n : ℕ) : 6 ^ n ≡ 1 [ZMOD 7] ∨ 6 ^ n ≡ 6 [ZMOD 7] := by
 
 example (n : ℕ) :
     4 ^ n ≡ 1 [ZMOD 7] ∨ 4 ^ n ≡ 2 [ZMOD 7] ∨ 4 ^ n ≡ 4 [ZMOD 7] := by
-  sorry
+  simple_induction n with k IH
+  . left
+    numbers
+  . obtain h|h|h := IH
+    . right; right
+      calc
+        4^(k+1) = 4 * 4^k := by ring
+        _ ≡ 4 * 1 [ZMOD 7] := by rel[h]
+        _ = 7*0 + 4 := by ring
+        _ ≡ 4 [ZMOD 7] := by extra
+    . left
+      calc
+        4^(k+1) = 4 * 4^k := by ring
+        _ ≡ 4 * 2 [ZMOD 7] := by rel[h]
+        _ = 7*1 + 1 := by ring
+        _ ≡ 1 [ZMOD 7] := by extra
+    . right;left
+      calc
+        4^(k+1) = 4 * 4^k := by ring
+        _ ≡ 4 * 4 [ZMOD 7] := by rel[h]
+        _ = 7*2 + 2 := by ring
+        _ ≡ 2 [ZMOD 7] := by extra
 
+-- this wasn't working, then I replaced
+-- 3→3:ℤ and now it does, why?
+-- one hint for that is that rel[IH] wasn't working
+-- that's because the types weren't the same
+-- another, more obvious hint, is in the problem description
 example : forall_sufficiently_large n : ℕ, (3:ℤ) ^ n ≥ 2 ^ n + 100 := by
   dsimp
-  sorry
+  use 5
+  intro x hx
+  induction_from_starting_point x, hx with k hk IH
+  . numbers
+  . calc
+      (3:ℤ)^(k+1) = 3 * 3^k := by ring
+      _ ≥ 3 * ( 2^k + 100 ) := by rel[IH]
+      _ = 3*2^k + 300 := by ring
+      _ = 2*2^k + 100 + (200+1*2^k) := by ring
+      _ ≥ 2*2^k + 100 := by extra
+      _ = 2^(k+1) + 100 := by ring
+
 
 example : forall_sufficiently_large n : ℕ, 2 ^ n ≥ n ^ 2 + 4 := by
   dsimp
-  sorry
+  use 5
+  intro x hx
+  induction_from_starting_point x, hx with k hk IH
+  . numbers
+  . calc
+      2^(k+1) = 2 * 2^k := by ring
+      _ ≥ 2 * (k^2+4) := by rel[IH]
+      _ = k^2 + k*k + 8 := by ring
+      _ ≥ k^2 + 5*k + 8 := by rel[hk]
+      _ = k^2 + 2*k +1 +4 + (3*k+3) := by ring
+      _ ≥ k^2 + 2*k +1 +4 := by extra
+      _ = (k+1)^2 + 4 := by ring
 
 example : forall_sufficiently_large n : ℕ, 2 ^ n ≥ n ^ 3 := by
   dsimp
-  sorry
+  use 10
+  intro x hx
+  induction_from_starting_point x, hx with k hk IH
+  . numbers
+  . calc
+      2^(k+1) = 2 * 2^k := by ring
+      _ ≥ 2 * k^3 := by rel[IH]
+      _ = k^3 + k*k^2 := by ring
+      _ ≥ k^3 + 10 * k^2 := by rel[hk]
+      _ = k^3 + 3*k^2 + 7*k*k := by ring
+      _ ≥ k^3 + 3*k^2 + 7*10*k := by rel[hk]
+      _ = k^3 + 3*k^2 + 3*k + 67*k := by ring
+      _ ≥ k^3 + 3*k^2 + 3*k + 67*10 := by rel[hk]
+      _ = k^3 + 3*k^2 + 3*k + 1 + 669 := by ring
+      _ ≥ k^3 + 3*k^2 + 3*k + 1 := by extra
+      _ = (k+1)^3 := by ring
 
 theorem Odd.pow {a : ℕ} (ha : Odd a) (n : ℕ) : Odd (a ^ n) := by
-  sorry
+  obtain ⟨x,hx⟩ := ha
+  simple_induction n with k IH
+  . rw[hx]
+    rw[pow_zero]
+    use 0
+    numbers
+  . obtain ⟨y,hy⟩ := IH
+    use 2*x*y+x+y
+    calc
+      a^(k+1) = a * a^k := by ring
+      _ = (2*x+1) * a^k := by rw[hx]
+      _ = (2*x+1) * (2*y+1) := by rw[hy]
+      _ = 2 * (2 * x * y + x + y) + 1 := by ring
+
+
 
 theorem Nat.even_of_pow_even {a n : ℕ} (ha : Even (a ^ n)) : Even a := by
-  sorry
+  obtain h|h := le_or_lt 2 n
+  . induction_from_starting_point n, h with k hk IH
+    . sorry
+    . sorry
+  . interval_cases n
+    . obtain ⟨x,hx⟩ := ha
+      use x*a
+      calc
+        a = a*a^0 := by ring
+        _ = a*(2*x) := by rw[hx]
+        _ = 2*(x*a) := by ring
+    . obtain ⟨x,hx⟩ := ha
+      use x
+      rw[← hx]
+      ring
