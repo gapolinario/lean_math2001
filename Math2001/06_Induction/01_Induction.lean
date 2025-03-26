@@ -127,10 +127,41 @@ example {a : ℝ} (ha : -1 ≤ a) (n : ℕ) : (1 + a) ^ n ≥ 1 + n * a := by
 
 
 example (n : ℕ) : 5 ^ n ≡ 1 [ZMOD 8] ∨ 5 ^ n ≡ 5 [ZMOD 8] := by
-  sorry
+  simple_induction n with k IH
+  . left
+    numbers
+  . obtain h|h := IH
+    . right
+      calc
+        5^(k+1) = 5 * 5^k := by ring
+        _ ≡ 5 * 1 [ZMOD 8] := by rel[h]
+        _ = 8*0 + 5 := by numbers
+        _ ≡ 5 [ZMOD 8] := by extra
+    . left
+      calc
+        5^(k+1) = 5 * 5^k := by ring
+        _ ≡ 5 * 5 [ZMOD 8] := by rel[h]
+        _ = 8*3 + 1 := by numbers
+        _ ≡ 1 [ZMOD 8] := by extra
+
 
 example (n : ℕ) : 6 ^ n ≡ 1 [ZMOD 7] ∨ 6 ^ n ≡ 6 [ZMOD 7] := by
-  sorry
+  simple_induction n with k IH
+  . left
+    numbers
+  . obtain h|h := IH
+    . right
+      calc
+        6^(k+1) = 6 * 6^k := by ring
+          _ ≡ 6 * 1 [ZMOD 7] := by rel[h]
+          _ = 7*0 + 6 := by numbers
+          _ ≡ 6 [ZMOD 7] := by extra
+    . left
+      calc
+        6^(k+1) = 6 * 6^k := by ring
+        _ ≡ 6 * 6 [ZMOD 7] := by rel[h]
+        _ = 7*5 + 1 := by numbers
+        _ ≡ 1 [ZMOD 7] := by extra
 
 example (n : ℕ) :
     4 ^ n ≡ 1 [ZMOD 7] ∨ 4 ^ n ≡ 2 [ZMOD 7] ∨ 4 ^ n ≡ 4 [ZMOD 7] := by
