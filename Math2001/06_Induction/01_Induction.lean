@@ -22,14 +22,28 @@ example (n : ℕ) : 2 ^ n ≥ n + 1 := by
 example (n : ℕ) : Even n ∨ Odd n := by
   simple_induction n with k IH
   · -- base case
-    sorry
+    left
+    use 0
+    numbers
   · -- inductive step
     obtain ⟨x, hx⟩ | ⟨x, hx⟩ := IH
-    · sorry
-    · sorry
+    · right
+      use x
+      rw[hx]
+    · left
+      use x+1
+      rw[hx]
+      ring
 
 example {a b d : ℤ} (h : a ≡ b [ZMOD d]) (n : ℕ) : a ^ n ≡ b ^ n [ZMOD d] := by
-  sorry
+  simple_induction n with k IH
+  . use 0
+    ring
+  . calc
+      a^(k+1) = a * a^k := by ring
+      _ ≡ b * a^k [ZMOD d] := by rel[h]
+      _ ≡ b * b^k [ZMOD d] := by rel[IH]
+      _ = b^(k+1) := by ring
 
 example (n : ℕ) : 4 ^ n ≡ 1 [ZMOD 15] ∨ 4 ^ n ≡ 4 [ZMOD 15] := by
   simple_induction n with k IH
@@ -66,19 +80,51 @@ example : forall_sufficiently_large n : ℕ, 2 ^ n ≥ n ^ 2 := by
   intro n hn
   induction_from_starting_point n, hn with k hk IH
   · -- base case
-    sorry
+    numbers
   · -- inductive step
-    sorry
+    calc
+      2^(k+1) = 2 * 2^k := by ring
+      _ ≥ 2 * k^2 := by rel[IH]
+      _ = k^2 + k*k := by ring
+      _ ≥ k^2 + 4*k := by rel[hk]
+      _ = k^2 + 2*k + 2*k := by ring
+      _ ≥ k^2 + 2*k + 2*4 := by rel[hk]
+      _ = k^2 + 2*k + 1 + 7 := by ring
+      _ ≥ k^2 + 2*k + 1 := by extra
+      _ = (k+1)^2 := by ring
 
 
 /-! # Exercises -/
 
 
 example (n : ℕ) : 3 ^ n ≥ n ^ 2 + n + 1 := by
-  sorry
+  simple_induction n with k IH
+  . numbers
+  . calc
+      3^(k+1) = 3 * 3^k := by ring
+      _ ≥ 3 * (k^2+k+1) := by rel[IH]
+      _ = k^2 + 3*k + 3 + 2*k^2 := by ring
+      _ ≥ k^2 + 3*k + 3 := by extra
+      _ = (k^2+2*k+1) + (k+1) + 1 := by ring
+      _ = (k+1)^2 + (k+1) + 1 := by ring
 
 example {a : ℝ} (ha : -1 ≤ a) (n : ℕ) : (1 + a) ^ n ≥ 1 + n * a := by
-  sorry
+  simple_induction n with k IH
+  . calc
+      (1+a)^0 ≥ (1+(-1))^0 := by rel[ha]
+      _ = 1 := by ring
+      _ = 1 + 0*a := by ring
+  . have h :=
+      calc
+        1+a ≥ 1+(-1) := by rel[ha]
+        _ = 0 := by numbers
+    calc
+      (1+a)^(k+1) = (1+a) * (1+a)^k := by ring
+      _ ≥ (1+a) * (1+k*a) := by rel[IH]
+      _ = 1 + k*a + a + k*a^2:= by ring
+      _ ≥ 1 + k*a + a := by extra
+      _ = 1 + (k+1)*a := by ring
+
 
 example (n : ℕ) : 5 ^ n ≡ 1 [ZMOD 8] ∨ 5 ^ n ≡ 5 [ZMOD 8] := by
   sorry
