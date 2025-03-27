@@ -14,7 +14,7 @@ def a : ℕ → ℤ
   | n + 2 => a (n + 1) + 2 * a n
 
 
-#eval a 5 -- infoview displays `31`
+--#eval a 5 -- infoview displays `31`
 
 
 example (n : ℕ) : a n = 2 ^ n + (-1) ^ n := by
@@ -101,7 +101,7 @@ def d : ℕ → ℤ
   | k + 2 => 3 * d (k + 1) + 5 * d k
 
 
-#eval d 2 -- infoview displays `18`
+/-#eval d 2 -- infoview displays `18`
 #eval d 3 -- infoview displays `59`
 #eval d 4 -- infoview displays `267`
 #eval d 5 -- infoview displays `1096`
@@ -115,7 +115,7 @@ def d : ℕ → ℤ
 #eval 4 ^ 5 -- infoview displays `1024`
 #eval 4 ^ 6 -- infoview displays `4096`
 #eval 4 ^ 7 -- infoview displays `16384`
-
+-/
 
 example : forall_sufficiently_large n : ℕ, d n ≥ 4 ^ n := by
   dsimp
@@ -141,7 +141,14 @@ def b : ℕ → ℤ
   | n + 2 => 5 * b (n + 1) - 6 * b n
 
 example (n : ℕ) : b n = 3 ^ n - 2 ^ n := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  . rw[b]
+    numbers
+  . rw[b]
+    numbers
+  . rw[b]
+    rw[IH1,IH2]
+    ring
 
 def c : ℕ → ℤ
   | 0 => 3
@@ -149,7 +156,15 @@ def c : ℕ → ℤ
   | n + 2 => 4 * c n
 
 example (n : ℕ) : c n = 2 * 2 ^ n + (-2) ^ n := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  . rw[c]
+    numbers
+  . rw[c]
+    numbers
+  . rw[c]
+    rw[IH1]
+    ring
+
 
 def t : ℕ → ℤ
   | 0 => 5
@@ -157,7 +172,14 @@ def t : ℕ → ℤ
   | n + 2 => 2 * t (n + 1) - t n
 
 example (n : ℕ) : t n = 2 * n + 5 := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  . rw[t]
+    numbers
+  . rw[t]
+    numbers
+  . rw[t]
+    rw[IH1,IH2]
+    ring
 
 def q : ℕ → ℤ
   | 0 => 1
@@ -165,7 +187,14 @@ def q : ℕ → ℤ
   | n + 2 => 2 * q (n + 1) - q n + 6 * n + 6
 
 example (n : ℕ) : q n = (n:ℤ) ^ 3 + 1 := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  . rw[q]
+    numbers
+  . rw[q]
+    numbers
+  . rw[q]
+    rw[IH1,IH2]
+    ring
 
 def s : ℕ → ℤ
   | 0 => 2
@@ -173,7 +202,36 @@ def s : ℕ → ℤ
   | n + 2 => 2 * s (n + 1) + 3 * s n
 
 example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
-  sorry
+  two_step_induction m with k IH1 IH2
+  . rw[s]
+    left
+    numbers
+  . rw[s]
+    right
+    numbers
+  . rw[s]
+    obtain h1|h1 := IH1
+    . obtain h2|h2 := IH2
+      . sorry
+      . left
+        calc
+          2 * s (k+1) + 3 * s k
+          _ ≡ 2 * 3 + 3 * s k [ZMOD 5] := by rel[h2]
+          _ ≡ 2*3 + 3*2 [ZMOD 5] := by rel[h1]
+          _ = 5*2 + 2 := by ring
+          _ ≡ 2 [ZMOD 5] := by extra
+    . obtain h2|h2 := IH2
+      . right
+        calc
+          2 * s (k+1) + 3 * s k
+          _ ≡ 2 * 2 + 3 * s k [ZMOD 5] := by rel[h2]
+          _ ≡ 2*2 + 3*3 [ZMOD 5] := by rel[h1]
+          _ = 5*2 + 3 := by ring
+          _ ≡ 3 [ZMOD 5] := by extra
+      . sorry
+
+
+
 
 def p : ℕ → ℤ
   | 0 => 2
@@ -181,7 +239,14 @@ def p : ℕ → ℤ
   | n + 2 => 6 * p (n + 1) - p n
 
 example (m : ℕ) : p m ≡ 2 [ZMOD 7] ∨ p m ≡ 3 [ZMOD 7] := by
-  sorry
+  two_step_induction m with k IH1 IH2
+  . rw[p]
+    left
+    numbers
+  . rw[p]
+    right
+    numbers
+  . sorry
 
 def r : ℕ → ℤ
   | 0 => 2
