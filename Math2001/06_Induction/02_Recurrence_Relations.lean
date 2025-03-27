@@ -11,7 +11,7 @@ namespace Int
 def a (n : ℕ) : ℕ := 2 ^ n
 
 
-#eval a 20 -- infoview displays `1048576`
+--#eval a 20 -- infoview displays `1048576`
 
 
 def b : ℕ → ℤ
@@ -19,7 +19,7 @@ def b : ℕ → ℤ
   | n + 1 => b n ^ 2 - 2
 
 
-#eval b 7 -- infoview displays `316837008400094222150776738483768236006420971486980607`
+--#eval b 7 -- infoview displays `316837008400094222150776738483768236006420971486980607`
 
 
 example (n : ℕ) : Odd (b n) := by
@@ -44,9 +44,21 @@ def x : ℕ → ℤ
 example (n : ℕ) : x n ≡ 1 [ZMOD 4] := by
   simple_induction n with k IH
   · -- base case
-    sorry
+    calc
+      x 0 = 5 := by rw[x]
+      _ ≡ 4*1 + 1 [ZMOD 4] := by numbers
+      _ ≡ 1 [ZMOD 4] := by extra
   · -- inductive step
-    sorry
+    obtain ⟨a,ha⟩ := IH
+    use 2*a
+    calc
+      x (k+1) - 1 = 2 * x k - 1 -1 := by rw[x]
+      _ = 2 * (x k -1) := by ring
+      _ = 2 * (4*a) := by rw[ha]
+      _ = 4*(2*a) := by ring
+
+
+
 
 example (n : ℕ) : x n = 2 ^ (n + 2) + 1 := by
   simple_induction n with k IH
@@ -93,12 +105,28 @@ example (n : ℕ) : ∀ d, 1 ≤ d → d ≤ n → d ∣ n ! := by
     intro d hk1 hk
     obtain hk | hk : d = k + 1 ∨ d < k + 1 := eq_or_lt_of_le hk
     · -- case 1: `d = k + 1`
-      sorry
+      use factorial k
+      rw[hk]
+      rw[factorial]
     · -- case 2: `d < k + 1`
-      sorry
+      obtain ⟨x,hx⟩ := IH d hk1 _
+      use (k+1)*x
+      rw[factorial]
+      rw[hx]
+      ring
 
 example (n : ℕ) : (n + 1)! ≥ 2 ^ n := by
-  sorry
+  simple_induction n with k IH
+  . rw[factorial]
+    rw[factorial]
+    numbers
+  . rw[factorial]
+    have h: k ≥ 0 := by addarith[]
+    calc
+      (k+1+1)*(k+1)! ≥ (k+1+1) * 2^k := by rel[IH]
+      _ = (2+k) * 2^k := by ring
+      _ ≥ (2+0) * 2^k := by rel[h]
+      _ = 2^(k+1) := by ring
 
 
 /-! # Exercises -/
@@ -136,7 +164,16 @@ example (n : ℕ) : S n = 2 - 1 / 2 ^ n := by
   sorry
 
 example (n : ℕ) : 0 < n ! := by
-  sorry
+  simple_induction n with k IH
+  . rw[factorial]
+    numbers
+  . rw[factorial]
+    have h : 1 ≤ k+1 := by addarith[]
+    calc
+      0 < factorial k := by rel[IH]
+      _ = 1 * factorial k := by ring
+      _ ≤ (k+1) * factorial k := by rel[h]
+
 
 example {n : ℕ} (hn : 2 ≤ n) : Nat.Even (n !) := by
   sorry
