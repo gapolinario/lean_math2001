@@ -109,7 +109,8 @@ example (n : ℕ) : ∀ d, 1 ≤ d → d ≤ n → d ∣ n ! := by
       rw[hk]
       rw[factorial]
     · -- case 2: `d < k + 1`
-      obtain ⟨x,hx⟩ := IH d hk1 _
+      have h: d ≤ k := by addarith[hk]
+      obtain ⟨x,hx⟩ := IH d hk1 h
       use (k+1)*x
       rw[factorial]
       rw[hx]
@@ -137,31 +138,60 @@ def c : ℕ → ℤ
   | n + 1 => 3 * c n - 10
 
 example (n : ℕ) : Odd (c n) := by
-  sorry
+  simple_induction n with k IH
+  . rw[c]
+    use 3
+    numbers
+  . obtain ⟨x,hx⟩ := IH
+    rw[c]
+    use 3 * x - 4
+    rw[hx]
+    ring
+
 
 example (n : ℕ) : c n = 2 * 3 ^ n + 5 := by
-  sorry
+  simple_induction n with k IH
+  . rw[c]
+    numbers
+  . rw[c]
+    rw[IH]
+    ring
 
 def y : ℕ → ℕ
   | 0 => 2
   | n + 1 => (y n) ^ 2
 
 example (n : ℕ) : y n = 2 ^ (2 ^ n) := by
-  sorry
+  simple_induction n with k IH
+  . rw[y]
+    numbers
+  . rw[y]
+    rw[IH]
+    ring
 
 def B : ℕ → ℚ
   | 0 => 0
   | n + 1 => B n + (n + 1 : ℚ) ^ 2
 
 example (n : ℕ) : B n = n * (n + 1) * (2 * n + 1) / 6 := by
-  sorry
+  simple_induction n with k IH
+  . rw[B]
+    numbers
+  . rw[B]
+    rw[IH]
+    ring
 
 def S : ℕ → ℚ
   | 0 => 1
   | n + 1 => S n + 1 / 2 ^ (n + 1)
 
 example (n : ℕ) : S n = 2 - 1 / 2 ^ n := by
-  sorry
+  simple_induction n with k IH
+  . rw[S]
+    numbers
+  . rw[S]
+    rw[IH]
+    ring
 
 example (n : ℕ) : 0 < n ! := by
   simple_induction n with k IH
@@ -176,7 +206,28 @@ example (n : ℕ) : 0 < n ! := by
 
 
 example {n : ℕ} (hn : 2 ≤ n) : Nat.Even (n !) := by
-  sorry
+  induction_from_starting_point n, hn with k hk IH
+  . rw[factorial]
+    use 1
+    rw[factorial]
+    rw[factorial]
+  . obtain ⟨a,ha⟩ := IH
+    rw[factorial]
+    use (k+1)*a
+    rw[ha]
+    ring
 
 example (n : ℕ) : (n + 1) ! ≤ (n + 1) ^ n := by
-  sorry
+  simple_induction n with k IH
+  . rw[factorial]
+    rw[factorial]
+    numbers
+  . have h: (k+1)^k ≤ (k+1+1)^k := by
+      apply Nat.pow_le_pow_of_le_left
+      addarith[]
+    calc
+      (k + 1 + 1)! = (k+1+1) * factorial (k+1) := by rw[factorial]
+      _ ≤ (k+1+1) * (k+1)^k := by rel[IH]
+      _ = (k+1+1) * (k+1)^k := by ring
+      _ ≤ (k+1+1) * (k+1+1)^k := by rel[h]
+      _ = (k+1+1)^(k+1) := by ring
