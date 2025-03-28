@@ -15,7 +15,7 @@ def pascal : ℕ → ℕ → ℕ
 termination_by _ a b => a + b
 
 
-#eval pascal 2 4 -- infoview displays `15`
+--#eval pascal 2 4 -- infoview displays `15`
 
 
 theorem pascal_le (a b : ℕ) : pascal a b ≤ (a + b)! := by

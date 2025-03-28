@@ -70,7 +70,6 @@ def F : ℕ → ℤ
   | 1 => 1
   | n + 2 => F (n + 1) + F n
 
-
 example (n : ℕ) : F n ≤ 2 ^ n := by
   two_step_induction n with k IH1 IH2
   · calc F 0 = 1 := by rw [F]
@@ -212,7 +211,9 @@ example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
   . rw[s]
     obtain h1|h1 := IH1
     . obtain h2|h2 := IH2
-      . sorry
+      . obtain ⟨x,hx⟩ := h1
+        obtain ⟨y,hy⟩ := h2
+        sorry
       . left
         calc
           2 * s (k+1) + 3 * s k
@@ -253,9 +254,76 @@ def r : ℕ → ℤ
   | 1 => 0
   | n + 2 => 2 * r (n + 1) + r n
 
+lemma r6 : r 6 = 58 := by
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[zero_add]
+  rw[r]
+  ring
+
+lemma r7 : r 7 = 140 := by
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[r]
+  rw[zero_add]
+  rw[r]
+  rw[r]
+  ring
+
+lemma r8 : r 8 = 338 := by
+  calc
+    r 8 = 2 * r (6+1) + r 6 := by rw[r]
+    _ = 2 * r 7 + r 6 := by ring
+    _ = 2 * 140 + 58 := by rw[r7,r6]
+    _ = 338 := by numbers
+
 example : forall_sufficiently_large n : ℕ, r n ≥ 2 ^ n := by
-  sorry
+  use 7
+  intro a ha
+  two_step_induction_from_starting_point a, ha with k hk IH1 IH2
+  . rw[r7]
+    numbers
+  . calc
+      r (7+1) = r 8 := by ring
+      _ = 338 := by rw[r8]
+      _ ≥ 256 := by numbers
+      _ = 2^(7+1) := by numbers
+  . calc
+      r (k+1+1) = 2 * r (k+1) + r k := by rw[r]
+      _ ≥ 2*2^(k+1) + 2^k := by rel[IH1,IH2]
+      _ = 2^(k+1+1) + 2^k := by ring
+      _ ≥ 2^(k+1+1) := by extra
+
+
 
 example : forall_sufficiently_large n : ℕ,
     (0.4:ℚ) * 1.6 ^ n < F n ∧ F n < (0.5:ℚ) * 1.7 ^ n := by
-  sorry
+  use 8
+  intro a ha
+  two_step_induction_from_starting_point a, ha with k hk IH1 IH2
+  . constructor
+    . rw[F,F,F,F,F,F,F,F,F,zero_add,F]
+      numbers
+    . rw[F,F,F,F,F,F,F,F,F,zero_add,F]
+      numbers
+  . constructor
+    . rw[F,F,F,F,F,F,F,F,F,zero_add,F,F]
+      numbers
+    . rw[F,F,F,F,F,F,F,F,F,F,zero_add,F]
+      numbers
+  . constructor
+    . rw[F]
+      sorry
+      /-calc
+        (0.4:ℚ) * 1.6^(k+1+1)
+        _ < (F (k + 1) + F k) := by sorry-/
+    . sorry
