@@ -211,8 +211,15 @@ example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
   . rw[s]
     obtain h1|h1 := IH1
     . obtain h2|h2 := IH2
-      . obtain ⟨x,hx⟩ := h1
-        obtain ⟨y,hy⟩ := h2
+      . --obtain ⟨x,hx⟩ := h1
+        --obtain ⟨y,hy⟩ := h2
+        have h :=
+          calc
+            2 * s (k+1) + 3 * s k ≡ 2 * 2 + 3 * 2 [ZMOD 5] := by rel[h2,h1]
+            _ = 5*2 + 0 := by numbers
+            _ ≡ 0 [ZMOD 5] := by extra
+        have h' : ¬ (2 * s (k+1) + 3 * s k ≡ 2 [ZMOD 5] ∨ 2 * s (k+1) + 3 * s k ≡ 3 [ZMOD 5]) := by
+          sorry
         sorry
       . left
         calc
