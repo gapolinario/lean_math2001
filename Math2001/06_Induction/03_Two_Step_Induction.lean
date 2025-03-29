@@ -201,44 +201,58 @@ def s : ℕ → ℤ
   | n + 2 => 2 * s (n + 1) + 3 * s n
 
 example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
-  two_step_induction m with k IH1 IH2
-  . rw[s]
-    left
-    numbers
-  . rw[s]
-    right
-    numbers
-  . rw[s]
-    obtain h1|h1 := IH1
-    . obtain h2|h2 := IH2
-      . --obtain ⟨x,hx⟩ := h1
-        --obtain ⟨y,hy⟩ := h2
-        have h :=
-          calc
-            2 * s (k+1) + 3 * s k ≡ 2 * 2 + 3 * 2 [ZMOD 5] := by rel[h2,h1]
-            _ = 5*2 + 0 := by numbers
-            _ ≡ 0 [ZMOD 5] := by extra
-        have h' : ¬ (2 * s (k+1) + 3 * s k ≡ 2 [ZMOD 5] ∨ 2 * s (k+1) + 3 * s k ≡ 3 [ZMOD 5]) := by
-          sorry
-        sorry
-      . left
-        calc
-          2 * s (k+1) + 3 * s k
-          _ ≡ 2 * 3 + 3 * s k [ZMOD 5] := by rel[h2]
-          _ ≡ 2*3 + 3*2 [ZMOD 5] := by rel[h1]
-          _ = 5*2 + 2 := by ring
+
+  -- prove a more specific case first
+  have h : (s m ≡ 2 [ZMOD 5] ∧ s (m+1) ≡ 3 [ZMOD 5]) ∨ (s m ≡ 3 [ZMOD 5] ∧ s (m+1) ≡ 2 [ZMOD 5]) := by
+    two_step_induction m with k IH1 IH2
+    . left
+      rw[zero_add,s,s]
+      constructor
+      all_goals {numbers}
+    . right
+      rw[s,s,zero_add,s,s]
+      constructor
+      . numbers
+      . calc
+          2*3+3*2 = 12 := by numbers
+          _ ≡ 5*2 + 2 [ZMOD 5]:= by numbers
           _ ≡ 2 [ZMOD 5] := by extra
-    . obtain h2|h2 := IH2
-      . right
-        calc
-          2 * s (k+1) + 3 * s k
-          _ ≡ 2 * 2 + 3 * s k [ZMOD 5] := by rel[h2]
-          _ ≡ 2*2 + 3*3 [ZMOD 5] := by rel[h1]
-          _ = 5*2 + 3 := by ring
-          _ ≡ 3 [ZMOD 5] := by extra
-      . sorry
+    . obtain ⟨h11,h12⟩|⟨h11,h12⟩ := IH1
+      . obtain ⟨h21,h22⟩|⟨h21,h22⟩ := IH2
+        . have h :=
+            calc
+              3 ≡ s (k+1) [ZMOD 5] := by rel[h12]
+              _ ≡ 2 [ZMOD 5]:= by rel[h21]
+          numbers at h
+        . left
+          constructor
+          . apply h22
+          . calc
+              s (k+1+1+1)
+              _ = 2*s (k+1+1) + 3 *s (k+1) := by rw[s]
+              _ ≡ 2*2 + 3*3 [ZMOD 5] := by rel[h12,h22]
+              _ ≡ 5*2 + 3 [ZMOD 5] := by numbers
+              _ ≡ 3 [ZMOD 5] := by extra
+      . obtain ⟨h21,h22⟩|⟨h21,h22⟩ := IH2
+        . right
+          constructor
+          . apply h22
+          . calc
+              s (k+1+1+1) = 2*s (k+1+1) + 3*s (k+1) := by rw[s]
+              _ ≡ 2*3+3*2 [ZMOD 5] := by rel[h12,h22]
+              _ ≡ 5*2+2 [ZMOD 5] := by numbers
+              _ ≡ 2 [ZMOD 5] := by extra
+        . have h :=
+            calc
+              2 ≡ s (k+1) [ZMOD 5] := by rel[h12]
+              _ ≡ 3 [ZMOD 5] := by rel[h21]
+          numbers at h
 
-
+  obtain ⟨h1,h2⟩|⟨h1,h2⟩ := h
+  . left
+    apply h1
+  . right
+    apply h1
 
 
 def p : ℕ → ℤ
@@ -247,14 +261,112 @@ def p : ℕ → ℤ
   | n + 2 => 6 * p (n + 1) - p n
 
 example (m : ℕ) : p m ≡ 2 [ZMOD 7] ∨ p m ≡ 3 [ZMOD 7] := by
-  two_step_induction m with k IH1 IH2
-  . rw[p]
+
+  have h : (p m ≡ 2 [ZMOD 7] ∧ p (m+1) ≡ 3 [ZMOD 7]) ∨ (p m ≡ 3 [ZMOD 7] ∧ p (m+1) ≡ 2 [ZMOD 7]) ∨ (p m ≡ 2 [ZMOD 7] ∧ p (m+1) ≡ 2 [ZMOD 7]):= by
+    two_step_induction m with k IH1 IH2
+    . left
+      rw[p,zero_add,p]
+      constructor
+      all_goals numbers
+    . right
+      left
+      rw[p,p,zero_add,p,p]
+      constructor
+      . numbers
+      . calc
+          6*3-2 ≡ 7*2+2 [ZMOD 7] := by numbers
+          _ ≡ 2 [ZMOD 7] := by extra
+    . obtain ⟨h11,h12⟩|h := IH1
+      . obtain ⟨h21,h22⟩|h := IH2
+        . have h :=
+            calc
+              3 ≡ p (k+1) [ZMOD 7] := by rel[h12]
+              _ ≡ 2 [ZMOD 7] := by rel[h21]
+          numbers at h
+        . right
+          right
+          constructor
+          . rw[p]
+            calc
+              6*p (k+1) - p k ≡ 6*3-2 [ZMOD 7] := by rel[h11,h12]
+              _ ≡ 7*2 + 2 [ZMOD 7] := by numbers
+              _ ≡ 2 [ZMOD 7] := by extra
+          . rw[p,p]
+            calc
+              6 * (6 * p (k + 1) - p k) - p (k + 1)
+              _ ≡ 6*(6*3-2)-3 [ZMOD 7] := by rel[h11,h12]
+              _ ≡ 7*13+2 [ZMOD 7] := by numbers
+              _ ≡ 2 [ZMOD 7] := by extra
+      . obtain ⟨h11,h12⟩|⟨h11,h12⟩ := h
+        . obtain ⟨h21,h22⟩|h := IH2
+          . right
+            right
+            constructor
+            . rw[p]
+              calc
+                6*p (k+1) - p k ≡ 6*2-3 [ZMOD 7] := by rel[h11,h12]
+                _ ≡ 7*1 + 2 [ZMOD 7] := by numbers
+                _ ≡ 2 [ZMOD 7] := by extra
+            . rw[p]
+              calc
+                6*p (k+1+1) - p (k+1) ≡ 6*3-2 [ZMOD 7] := by rel[h12,h22]
+                _ ≡ 7*2 + 2 [ZMOD 7] := by numbers
+                _ ≡ 2 [ZMOD 7] := by extra
+          . obtain ⟨h21,h22⟩|⟨h21,h22⟩ := h
+            . have h :=
+                calc
+                  2 ≡ p (k+1) [ZMOD 7] := by rel[h12]
+                  _ ≡ 3 [ZMOD 7] := by rel[h21]
+              numbers at h
+            . left
+              constructor
+              . apply h22
+              . rw[p]
+                calc
+                  6*p (k+1+1) - p (k+1) ≡ 6*2-2 [ZMOD 7] := by rel[h22,h12]
+                  _ ≡ 7*1 + 3 [ZMOD 7] := by numbers
+                  _ ≡ 3 [ZMOD 7] := by extra
+        . obtain ⟨h21,h22⟩|⟨h21,h22⟩ := IH2
+          . right
+            left
+            constructor
+            . apply h22
+            . rw[p]
+              calc
+                6*p (k+1+1) - p (k+1) ≡ 6*3-2 [ZMOD 7] := by rel[h22,h12]
+                _ ≡ 7*2 + 2 [ZMOD 7] := by numbers
+                _ ≡ 2 [ZMOD 7] := by extra
+          . have h :=
+              calc
+                2 ≡ p (k+1) [ZMOD 7] := by rel[h12]
+                _ ≡ 3 [ZMOD 7] := by rel[h21]
+            numbers at h
+          . right
+            left
+            constructor
+            . rw[p]
+              calc
+                6*p (k+1) - p k ≡ 6*2-2 [ZMOD 7] := by rel[h11,h12]
+                _ ≡ 7*1+3 [ZMOD 7] := by numbers
+                _ ≡ 3 [ZMOD 7] := by extra
+            . rw[p,p]
+              calc
+                6 * (6 * p (k + 1) - p k) - p (k + 1)
+                _ ≡ 6*(6*2-2)-2 [ZMOD 7] := by rel[h11,h12]
+                _ ≡ 7*8+2 [ZMOD 7] := by numbers
+                _ ≡ 2 [ZMOD 7] := by extra
+
+  obtain h|h|h := h
+  . obtain ⟨h1,h2⟩ := h
     left
-    numbers
-  . rw[p]
+    apply h1
+  . obtain ⟨h1,h2⟩ := h
     right
-    numbers
-  . sorry
+    apply h1
+  . obtain ⟨h1,h2⟩ := h
+    left
+    apply h1
+
 
 def r : ℕ → ℤ
   | 0 => 2
@@ -262,28 +374,11 @@ def r : ℕ → ℤ
   | n + 2 => 2 * r (n + 1) + r n
 
 lemma r6 : r 6 = 58 := by
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[zero_add]
-  rw[r]
+  rw[r,r,r,r,r,r,r,zero_add,r]
   ring
 
 lemma r7 : r 7 = 140 := by
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[r]
-  rw[zero_add]
-  rw[r]
-  rw[r]
+  rw[r,r,r,r,r,r,r,zero_add,r,r]
   ring
 
 lemma r8 : r 8 = 338 := by
@@ -328,9 +423,25 @@ example : forall_sufficiently_large n : ℕ,
     . rw[F,F,F,F,F,F,F,F,F,F,zero_add,F]
       numbers
   . constructor
-    . rw[F]
-      sorry
-      /-calc
+    . obtain ⟨h11,h12⟩ := IH1
+      obtain ⟨h21,h22⟩ := IH2
+      rw[F]
+      calc
         (0.4:ℚ) * 1.6^(k+1+1)
-        _ < (F (k + 1) + F k) := by sorry-/
-    . sorry
+        _ = (0.4:ℚ) * 1.6^(k+1) + (0.24:ℚ) * 1.6^(k+1) := by ring
+        _ = (0.4:ℚ) * 1.6^(k+1) + (0.384:ℚ) * 1.6^k := by ring
+        _ < (0.4:ℚ) * 1.6^(k+1) + (0.384:ℚ) * 1.6^k + (0.016:ℚ) * 1.6^k := by extra
+        _ = (0.4:ℚ) * 1.6^(k+1) + (0.4:ℚ) * 1.6^k := by ring
+        _ < ↑(F (k + 1)) + ↑(F k) := by rel[h11,h21]
+        --_ = ↑(F (k + 1) + F k) := by exact cast_add (F (k+1)) (F (k))
+      sorry
+    . obtain ⟨h11,h12⟩ := IH1
+      obtain ⟨h21,h22⟩ := IH2
+      rw[F]
+      calc
+        ↑(F (k + 1) + F k)
+        _ = ↑(F (k + 1)) + ↑(F k) := by exact cast_add (F (k+1)) (F (k))
+        _ < (0.5:ℚ) * 1.7^(k+1) + (0.5:ℚ) * 1.7^k := by rel[h12,h22]
+        _ < (0.5:ℚ) * 1.7^(k+1) + (0.5:ℚ) * 1.7^k + (0.095:ℚ) * 1.7^k:= by extra
+        _ = (0.5:ℚ) * 1.7^(k+1) + (0.35:ℚ) * 1.7^(k+1) := by ring
+        _ = (0.5:ℚ) * 1.7^(k+1+1) := by ring
