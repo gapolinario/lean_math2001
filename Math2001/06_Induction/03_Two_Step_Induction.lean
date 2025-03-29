@@ -433,8 +433,7 @@ example : forall_sufficiently_large n : ℕ,
         _ < (0.4:ℚ) * 1.6^(k+1) + (0.384:ℚ) * 1.6^k + (0.016:ℚ) * 1.6^k := by extra
         _ = (0.4:ℚ) * 1.6^(k+1) + (0.4:ℚ) * 1.6^k := by ring
         _ < ↑(F (k + 1)) + ↑(F k) := by rel[h11,h21]
-        --_ = ↑(F (k + 1) + F k) := by exact cast_add (F (k+1)) (F (k))
-      sorry
+        _ = ↑(F (k + 1) + F k) := by field_simp
     . obtain ⟨h11,h12⟩ := IH1
       obtain ⟨h21,h22⟩ := IH2
       rw[F]
