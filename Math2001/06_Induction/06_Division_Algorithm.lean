@@ -28,8 +28,8 @@ def fdiv (n d : ℤ) : ℤ :=
 termination_by _ n d => 2 * n - d
 
 
-#eval fmod 11 4 -- infoview displays `3`
-#eval fdiv 11 4 -- infoview displays `2`
+--#eval fmod 11 4 -- infoview displays `3`
+--#eval fdiv 11 4 -- infoview displays `2`
 
 
 theorem fmod_add_fdiv (n d : ℤ) : fmod n d + d * fdiv n d = n := by
@@ -106,8 +106,17 @@ example (a b : ℤ) (h : 0 < b) : ∃ r : ℤ, 0 ≤ r ∧ r < b ∧ a ≡ r [ZM
 /-! # Exercises -/
 
 
+
 theorem lt_fmod_of_neg (n : ℤ) {d : ℤ} (hd : d < 0) : d < fmod n d := by
-  sorry
+  rw [fmod]
+  split_ifs with h1 h2 h3 <;> push_neg at *
+  . have IH := lt_fmod_of_neg (n+d) hd
+    apply IH
+  . have IH := lt_fmod_of_neg (n-d) hd
+    apply IH
+  . apply hd
+  . sorry
+termination_by _ n d hd => 2 * n - d
 
 def T (n : ℤ) : ℤ :=
   if 0 < n then
@@ -119,12 +128,60 @@ def T (n : ℤ) : ℤ :=
 termination_by T n => 3 * n - 1
 
 theorem T_eq (n : ℤ) : T n = n ^ 2 := by
-  sorry
+  rw[T]
+  split_ifs with h1 h2 <;> push_neg at *
+  . --0 < n
+    have IH := T_eq (1-n)
+    calc
+      T (1-n) + 2*n -1
+      _ = (1-n)^2 + 2*n -1 := by rw[IH]
+      _ = n^2 - 2*n + 1 + 2*n -1 := by ring
+      _ = n^2 := by ring
+  . -- 0 < -n
+    have IH := T_eq (-n)
+    rw[IH]
+    ring
+  . -- else
+    have h3 : n≥0 := by addarith[h2]
+    have h := le_antisymm h1 h3
+    rw[h]
+    numbers
+termination_by _ n => 3 * n - 1
+
 
 theorem uniqueness (a b : ℤ) (h : 0 < b) {r s : ℤ}
     (hr : 0 ≤ r ∧ r < b ∧ a ≡ r [ZMOD b])
     (hs : 0 ≤ s ∧ s < b ∧ a ≡ s [ZMOD b]) : r = s := by
-  sorry
+  obtain ⟨hr1,hr2,p,hr3⟩ := hr
+  obtain ⟨hs1,hs2,q,hs3⟩ := hs
+  have hab : fmod a b + b * fdiv a b = a := fmod_add_fdiv a b
+  have hx1 : r = fmod a b := by sorry
+  have hx2 : s = fmod a b := by sorry
+  calc
+    r
+    _ = fmod a b := by rw[hx1]
+    _ = s := by rw[hx2]
+
 
 example (a b : ℤ) (h : 0 < b) : ∃! r : ℤ, 0 ≤ r ∧ r < b ∧ a ≡ r [ZMOD b] := by
-  sorry
+  use fmod a b
+  dsimp
+  have h1 := fmod_nonneg_of_pos a h
+  have h2 := fmod_lt_of_pos a h
+  constructor
+  . constructor
+    . apply h1
+    . constructor
+      . apply h2
+      . have Hab : fmod a b + b * fdiv a b = a := fmod_add_fdiv a b
+        use fdiv a b
+        addarith[Hab]
+  . intro y hy
+    have Hab : fmod a b + b * fdiv a b = a := fmod_add_fdiv a b
+    have h3 : a ≡ fmod a b [ZMOD b] := by
+      use fdiv a b
+      addarith[Hab]
+    have hz := And.intro h2 h3
+    have hz := And.intro h1 hz
+    have hu := uniqueness a b h hy hz
+    apply hu
