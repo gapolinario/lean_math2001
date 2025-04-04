@@ -214,6 +214,7 @@ lemma help1 (k : ℕ) : s k ≡ 2 [ZMOD 5] → ¬ ( s (k+1) ≡ 2 [ZMOD 5]) := b
     apply h1
 
 example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
+<<<<<<< HEAD
   two_step_induction m with k IH1 IH2
   . rw[s]
     left

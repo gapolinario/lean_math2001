@@ -55,4 +55,19 @@ theorem exists_prime_factor {n : ℕ} (hn2 : 2 ≤ n) : ∃ p : ℕ, Prime p ∧
 
 
 theorem extract_pow_two (n : ℕ) (hn : 0 < n) : ∃ a x, Odd x ∧ n = 2 ^ a * x := by
-  sorry
+  obtain h|h := even_or_odd n
+  . match n with
+    | 1 =>
+      have h' : Odd 1 := by use 0; numbers
+      have h'' := (odd_iff_not_even 1).mp h'
+      contradiction
+    | 2 =>
+      use 1,1
+      constructor
+      . use 0
+        numbers
+      . numbers
+    | k+2 =>
+      have IH := extract_pow_two k
+      sorry
+  . sorry
