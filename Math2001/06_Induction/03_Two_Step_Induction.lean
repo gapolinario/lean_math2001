@@ -200,6 +200,19 @@ def s : ℕ → ℤ
   | 1 => 3
   | n + 2 => 2 * s (n + 1) + 3 * s n
 
+lemma help1 (k : ℕ) : s k ≡ 2 [ZMOD 5] → ¬ ( s (k+1) ≡ 2 [ZMOD 5]) := by
+  intro h1 h2
+  simple_induction k with x IH
+  . have h3 :=
+      calc
+        3 = s 1 := by rw[s]
+        _ = s (0+1) := by ring
+        _ ≡ 2 [ZMOD 5] := by rel[h2]
+    numbers at h3
+  . apply IH
+    sorry
+    apply h1
+
 example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
   two_step_induction m with k IH1 IH2
   . rw[s]
@@ -215,12 +228,19 @@ example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
         --obtain ⟨y,hy⟩ := h2
         have h :=
           calc
-            2 * s (k+1) + 3 * s k ≡ 2 * 2 + 3 * 2 [ZMOD 5] := by rel[h2,h1]
+            s (k+2)
+            _ = 2 * s (k+1) + 3 * s k := by rw[s]
+            _ ≡ 2 * 2 + 3 * 2 [ZMOD 5] := by rel[h2,h1]
             _ = 5*2 + 0 := by numbers
             _ ≡ 0 [ZMOD 5] := by extra
-        have h' : ¬ (2 * s (k+1) + 3 * s k ≡ 2 [ZMOD 5] ∨ 2 * s (k+1) + 3 * s k ≡ 3 [ZMOD 5]) := by
-          sorry
-        sorry
+        have ha :=
+          calc
+            s 2 = s (0+2) := by ring
+            _ ≡ 0 [ZMOD 5] := by sorry
+        have hb :=
+          calc
+            s 2 = 2 * s (0+1) + 3 * s 0 := by rw[s]
+            _ ≡ 2 [ZMOD 5] := by sorry
       . left
         calc
           2 * s (k+1) + 3 * s k
