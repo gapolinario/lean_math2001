@@ -259,19 +259,34 @@ theorem Odd.pow {a : ℕ} (ha : Odd a) (n : ℕ) : Odd (a ^ n) := by
 
 
 
-theorem Nat.even_of_pow_even {a n : ℕ} (ha : Even (a ^ n)) : Even a := by
-  obtain h|h := le_or_lt 2 n
-  . induction_from_starting_point n, h with k hk IH
-    . sorry
-    . sorry
-  . interval_cases n
-    . obtain ⟨x,hx⟩ := ha
-      use x*a
+lemma help1 {n : ℕ} : ¬ Even n ↔ Odd n := by
+  constructor
+  . intro h1
+    obtain h2|h2 := even_or_odd n
+    . contradiction
+    . apply h2
+  . intro h1 h2
+    obtain ⟨p,hp⟩ := h1
+    obtain ⟨q,hq⟩ := h2
+    have h3 : n ≡ 1 [ZMOD 2] := by
+      use p
+      rw[hp]
+      field_simp
+    have h4 : n ≡ 0 [ZMOD 2] := by
+      use q
+      rw[hq]
+      field_simp
+    have h5 :=
       calc
-        a = a*a^0 := by ring
-        _ = a*(2*x) := by rw[hx]
-        _ = 2*(x*a) := by ring
-    . obtain ⟨x,hx⟩ := ha
-      use x
-      rw[← hx]
-      ring
+        1 ≡ n [ZMOD 2] := by rel[h3]
+        _ ≡ 0 [ZMOD 2] := by rel[h4]
+    numbers at h5
+
+
+
+theorem Nat.even_of_pow_even' {a n : ℕ} (ha : Even (a ^ n)) : Even a := by
+  obtain h|h := even_or_odd a
+  . apply h
+  . have h2 := Odd.pow h n
+    have h3 := help1.mpr h2
+    contradiction
