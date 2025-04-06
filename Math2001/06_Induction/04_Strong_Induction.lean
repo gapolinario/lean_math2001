@@ -68,6 +68,63 @@ theorem extract_pow_two (n : ℕ) (hn : 0 < n) : ∃ a x, Odd x ∧ n = 2 ^ a * 
         numbers
       . numbers
     | k+2 =>
-      have IH := extract_pow_two k
+      obtain h2|h2|h2 := lt_trichotomy k 0
+      . have h3 := not_lt_zero k
+        contradiction
+      . use 1,1
+        constructor
+        . use 0
+          numbers
+        . rw[h2]
+          numbers
+      have IH := extract_pow_two k h2
+      obtain ⟨a,x,⟨hl,hr⟩⟩ := IH
       sorry
-  . sorry
+
+  . use 0, n
+    constructor
+    . apply h
+    . ring
+
+theorem extract_pow_two' (n : ℕ) (hn : 0 < n) : ∃ a x, Odd x ∧ n = 2 ^ a * x := by
+  obtain h|h := even_or_odd n
+  . obtain ⟨k,hk⟩ := h
+    obtain h|h|h := lt_trichotomy k 1
+    . have h : k = 0 := by addarith[h]
+      have h2 :=
+        calc
+          n = 2*k := by rw[hk]
+          _ = 2*0 := by rw[h]
+          _ = 0 := by ring
+      have h3 :=
+        calc
+          0 < n := by rel[hn]
+          _ = 0 := by rw[h2]
+      numbers at h3
+    . use 1,1
+      constructor
+      . use 0
+        numbers
+      . rw[hk,h]
+        numbers
+    . have h' :=
+        calc
+          2 = 2*1 := by numbers
+          _ < 2*k := by rel[h]
+          _ = n := by rw[hk]
+      have h'' :=
+        calc
+          0 = 2-2 := by numbers
+          _ < n-2 := by rel[h']
+      induction_from_starting_point k,h with p hp IH
+      . use 2,1
+        constructor
+        . use 0
+          numbers
+        . rw[hk]
+          numbers
+      . sorry
+  . use 0, n
+    constructor
+    . apply h
+    . ring
