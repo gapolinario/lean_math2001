@@ -41,10 +41,13 @@ theorem problem3 : ∃ a b : ℕ, a ≠ 0 ∧ 2 ^ a = 5 * b + 1 := by
 @[autograded 5]
 theorem problem4 (x : ℚ) : ∃ y : ℚ, y ^ 2 > x := by
   use x+1
-  calc
+  obtain h|h := le_or_lt x (-1:ℚ)
+  . sorry
+  . sorry
+  /-calc
     (x+1)^2
     _ = x^2+2*x+1 := by ring
-    _ > x := by sorry
+    _ > x^2+2*x := by extra-/
 
 @[autograded 5]
 theorem problem5 {x : ℕ} (hx : Odd x) : Odd (x ^ 3) := by

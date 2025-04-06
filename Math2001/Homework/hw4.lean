@@ -15,11 +15,18 @@ for clearer statements and any special instructions. -/
 
 @[autograded 5]
 theorem problem1 (n : ℤ) : Odd (3 * n ^ 2 + 3 * n - 1) := by
-  sorry
+  obtain ⟨k,hk⟩|⟨k,hk⟩ := even_or_odd n
+  . use 6*k^2+3*k-1
+    rw[hk]
+    ring
+  . use 6*k^2+9*k+2
+    rw[hk]
+    ring
 
 @[autograded 1]
 theorem problem2 : (8 : ℤ) ∣ 96 := by
-  sorry
+  use 12
+  numbers
 
 @[autograded 2]
 theorem problem3 : ¬(8 : ℤ) ∣ -55 := by
